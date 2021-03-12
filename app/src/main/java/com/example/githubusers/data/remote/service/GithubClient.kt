@@ -2,8 +2,8 @@ package com.example.githubusers.data.remote.service
 
 import com.example.githubusers.data.remote.model.ProfileResponse
 import com.example.githubusers.data.remote.model.UserResponse
-import com.example.githubusers.data.util.constants.since
-import com.example.githubusers.data.util.constants.user
+import com.example.githubusers.data.util.constants.sinceQuery
+import com.example.githubusers.data.util.constants.users
 import com.example.githubusers.data.util.constants.usernamePath
 import retrofit2.Call
 import retrofit2.http.GET
@@ -12,12 +12,12 @@ import retrofit2.http.Query
 
 interface GithubClient {
 
-    @GET(user)
+    @GET(users)
     fun getUserList(
-        @Query(since) page: Int,
+        @Query(sinceQuery) page: Int,
     ): Call<List<UserResponse>>
 
-    @GET("$user{$usernamePath}")
+    @GET("$users{$usernamePath}")
     fun getProfile(
         @Path(usernamePath) username: String,
     ): Call<ProfileResponse>
