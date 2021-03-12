@@ -5,7 +5,14 @@ import com.example.githubusers.data.remote.model.UserResponse
 
 interface IGithubRepository {
 
-    fun requestUserList(page: Int, callback: ((List<UserResponse>) -> Unit))
-    fun requestUserProfile(username: String, callback: ((ProfileResponse) -> Unit))
+    interface Listener<T: Any?> {
+
+        fun onSuccess(data: T? = null)
+        fun onFailed(errorMessage: String)
+
+    }
+
+    suspend fun requestUserList(page: Int, listener: Listener<List<UserResponse>>)
+    suspend fun requestUserProfile(username: String, listener: Listener<ProfileResponse>)
 
 }
