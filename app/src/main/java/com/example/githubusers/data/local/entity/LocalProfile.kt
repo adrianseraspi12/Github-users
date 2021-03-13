@@ -12,6 +12,7 @@ data class LocalProfile(
     @ColumnInfo(name = userIdColumn)
     var userId: Int? = null,
     var name: String? = null,
+    var bio: String? = null,
     @ColumnInfo(name = followersCountColumn) var followersCount: Int? = null,
     @ColumnInfo(name = followingCountColumn) var followingCount: Int? = null,
     var company: String? = null,
