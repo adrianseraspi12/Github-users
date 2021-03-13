@@ -1,6 +1,6 @@
 package com.example.githubusers.data.local.repository
 
-import com.example.githubusers.data.Listener
+import com.example.githubusers.data.Result
 import com.example.githubusers.data.local.dao.ProfileDao
 import com.example.githubusers.data.local.dao.UsersDao
 import com.example.githubusers.data.local.entity.LocalProfile
@@ -16,87 +16,77 @@ class UserRepository(
     private val profileDao: ProfileDao,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IUserRepository {
-    override suspend fun getAllUsers(listener: Listener<List<LocalUser>>) =
-        withContext(ioDispatcher) {
-            try {
-                val listOfUsers = usersDao.getAllUsers()
-                listener.onSuccess(listOfUsers)
-            } catch (e: Exception) {
-                listener.onFailed(getAllUsersErrorMessage)
-            }
-        }
 
-    override suspend fun getAllUserWithProfile(listener: Listener<List<UserWithProfile>>) =
-        withContext(ioDispatcher) {
-            try {
-                val listOfUserWithProfile = usersDao.getAllUserWithProfile()
-                listener.onSuccess(listOfUserWithProfile)
-            } catch (e: Exception) {
-                listener.onFailed(getAllUserWithProfileErrorMessage)
-            }
-        }
-
-    override suspend fun getUser(id: Int, listener: Listener<LocalUser>) =
-        withContext(ioDispatcher) {
-            try {
-                val user = usersDao.findUserById(id)
-                listener.onSuccess(user)
-            } catch (e: Exception) {
-                listener.onFailed(getUserErrorMessage)
-            }
-        }
-
-    override suspend fun insertProfile(
-        profile: LocalProfile,
-        listener: Listener<Any>
-    ) = withContext(ioDispatcher) {
-        try {
-            profileDao.insertProfile(profile)
-            listener.onSuccess()
+    override suspend fun getAllUsers(): Result<List<LocalUser>> = withContext(ioDispatcher) {
+        return@withContext try {
+            Result.onSuccess(usersDao.getAllUsers())
         } catch (e: Exception) {
-            listener.onFailed(insertProfileErrorMessage)
+            Result.onFailed(getAllUsersErrorMessage)
         }
     }
 
-    override suspend fun updateProfile(
-        profile: LocalProfile,
-        listener: Listener<Any>
-    ) = withContext(ioDispatcher) {
-        try {
-            profileDao.updateProfile(profile)
-            listener.onSuccess()
-        } catch (e: Exception) {
-            listener.onFailed(updateProfileErrorMessage)
-        }
-    }
-
-    override suspend fun updateUser(user: LocalUser, listener: Listener<Any>) =
+    override suspend fun getAllUserWithProfile(): Result<List<UserWithProfile>> =
         withContext(ioDispatcher) {
-            try {
-                usersDao.updateUser(user)
-                listener.onSuccess()
+            return@withContext try {
+                Result.onSuccess(usersDao.getAllUserWithProfile())
             } catch (e: Exception) {
-                listener.onFailed(updateUserErrorMessage)
+                Result.onFailed(getAllUserWithProfileErrorMessage)
             }
         }
 
-    override suspend fun saveAll(user: List<LocalUser>, listener: Listener<Any>) =
+    override suspend fun getUser(id: Int): Result<LocalUser> = withContext(ioDispatcher) {
+        return@withContext try {
+            Result.onSuccess(usersDao.findUserById(id))
+        } catch (e: Exception) {
+            Result.onFailed(getUserErrorMessage)
+        }
+    }
+
+    override suspend fun insertProfile(profile: LocalProfile): Result<Nothing> =
         withContext(ioDispatcher) {
-            try {
+            return@withContext try {
+                profileDao.insertProfile(profile)
+                Result.onSuccess()
+            } catch (e: Exception) {
+                Result.onFailed(insertProfileErrorMessage)
+            }
+        }
+
+    override suspend fun updateProfile(profile: LocalProfile): Result<Nothing> =
+        withContext(ioDispatcher) {
+            return@withContext try {
+                profileDao.updateProfile(profile)
+                Result.onSuccess()
+            } catch (e: Exception) {
+                Result.onFailed(updateProfileErrorMessage)
+            }
+        }
+
+    override suspend fun updateUser(user: LocalUser): Result<Nothing> = withContext(ioDispatcher) {
+        return@withContext try {
+            usersDao.updateUser(user)
+            Result.onSuccess()
+        } catch (e: Exception) {
+            Result.onFailed(updateUserErrorMessage)
+        }
+    }
+
+    override suspend fun saveAll(user: List<LocalUser>): Result<Nothing> =
+        withContext(ioDispatcher) {
+            return@withContext try {
                 usersDao.insertAll(user)
-                listener.onSuccess()
+                Result.onSuccess()
             } catch (e: Exception) {
-                listener.onFailed(saveAllErrorMessage)
+                Result.onFailed(saveAllErrorMessage)
             }
         }
 
-    override suspend fun deleteAllUser(listener: Listener<Any>) =
-        withContext(ioDispatcher) {
-            try {
-                usersDao.deleteAll()
-                listener.onSuccess()
-            } catch (e: Exception) {
-                listener.onFailed(deleteAllUserErrorMessage)
-            }
+    override suspend fun deleteAllUser(): Result<Nothing> = withContext(ioDispatcher) {
+        return@withContext try {
+            usersDao.deleteAll()
+            Result.onSuccess()
+        } catch (e: Exception) {
+            Result.onFailed(deleteAllUserErrorMessage)
         }
+    }
 }
