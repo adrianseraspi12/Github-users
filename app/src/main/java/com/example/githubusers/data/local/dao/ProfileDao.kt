@@ -11,7 +11,7 @@ import com.example.githubusers.data.local.entity.LocalUser
 interface ProfileDao {
 
     @Query("SELECT * FROM profile WHERE _id=:id")
-    fun findProfileByUserId(id: Int): LocalUser
+    fun findProfileByUserId(id: Int): LocalProfile
 
     @Update
     fun updateProfile(user: LocalProfile)
