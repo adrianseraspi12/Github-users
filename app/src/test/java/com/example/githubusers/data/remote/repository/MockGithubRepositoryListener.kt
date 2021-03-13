@@ -1,6 +1,6 @@
 package com.example.githubusers.data.remote.repository
 
-import com.example.githubusers.data.Listener
+import com.example.githubusers.data.remote.Listener
 
 class MockGithubRepositoryListener<T> : Listener<T> {
     var data: T? = null

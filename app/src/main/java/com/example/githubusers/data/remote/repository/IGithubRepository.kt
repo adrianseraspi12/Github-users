@@ -1,6 +1,6 @@
 package com.example.githubusers.data.remote.repository
 
-import com.example.githubusers.data.Listener
+import com.example.githubusers.data.remote.Listener
 import com.example.githubusers.data.remote.model.ProfileResponse
 import com.example.githubusers.data.remote.model.UserResponse
 

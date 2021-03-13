@@ -27,30 +27,30 @@ class UsersDaoTest {
         //  the data stored here will erase after
         //  testing
         usersDatabase = Room.inMemoryDatabaseBuilder(
-            getApplicationContext(),
-            UsersDatabase::class.java
+                getApplicationContext(),
+                UsersDatabase::class.java
         ).build()
     }
 
     @Test
     fun insertListOfUsersAndGetAllUsers() {
         val listOfUsers = listOf(
-            LocalUser(
-                0,
-                    "john",
-                "https://www.jd.com/png",
-                "",
-            ),
-            LocalUser(
-                1, "jane",
-                "https://www.jnd.com/png",
-                "Visit my blog",
-            ),
-            LocalUser(
-                2, "uncle",
-                "https://www.ub.com/png",
-                "notes to uncle",
-            )
+                LocalUser(
+                        0,
+                        "john",
+                        "https://www.jd.com/png",
+                        "",
+                ),
+                LocalUser(
+                        1, "jane",
+                        "https://www.jnd.com/png",
+                        "Visit my blog",
+                ),
+                LocalUser(
+                        2, "uncle",
+                        "https://www.ub.com/png",
+                        "notes to uncle",
+                )
         )
 
         usersDatabase.usersDao().insertAll(listOfUsers)
@@ -142,7 +142,7 @@ class UsersDaoTest {
         usersDatabase.usersDao().insertAll(listOf(user))
 
         //  Insert profile
-        val profile =  LocalProfile(
+        val profile = LocalProfile(
                 0,
                 user.id!!,
                 "John doe",
