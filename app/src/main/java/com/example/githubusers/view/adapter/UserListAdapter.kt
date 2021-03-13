@@ -1,0 +1,56 @@
+package com.example.githubusers.view.adapter
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.githubusers.data.local.entity.UserWithProfile
+import com.example.githubusers.databinding.ItemUsersBinding
+
+class UserListAdapter : RecyclerView.Adapter<UserListAdapter.ViewHolder>() {
+
+    private var data: List<UserWithProfile> = listOf()
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val binding = ItemUsersBinding.inflate(layoutInflater, parent, false)
+        return ViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val userWithProfile = data[position]
+        holder.bind(userWithProfile)
+    }
+
+    override fun getItemCount(): Int {
+        return data.size
+    }
+
+    fun updateData(data: List<UserWithProfile>) {
+        this.data = data
+        notifyDataSetChanged()
+    }
+
+    class ViewHolder(private val binding: ItemUsersBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(userWithProfile: UserWithProfile) {
+            binding.usersTvUsername.text = userWithProfile.user?.username
+            binding.usersTvDetails.text = userWithProfile.profile?.bio
+
+            val notes = userWithProfile.user?.notes ?: ""
+            if (notes.isNotEmpty()) {
+                binding.usersIvNotes.visibility = View.VISIBLE
+            } else {
+                binding.usersIvNotes.visibility = View.GONE
+            }
+
+            Glide.with(binding.root)
+                .load(userWithProfile.user?.image)
+                .centerCrop()
+                .into(binding.usersIvProfile)
+        }
+
+    }
+}
