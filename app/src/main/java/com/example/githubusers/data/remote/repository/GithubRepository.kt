@@ -4,9 +4,9 @@ import com.example.githubusers.data.Listener
 import com.example.githubusers.data.remote.model.ProfileResponse
 import com.example.githubusers.data.remote.model.UserResponse
 import com.example.githubusers.data.remote.service.GithubClient
-import com.example.githubusers.data.util.constants.requestUserListErrorMessage
-import com.example.githubusers.data.util.constants.requestUserProfileErrorMessage
-import com.example.githubusers.data.util.constants.somethingWentWrongErrorMessage
+import com.example.githubusers.util.constants.requestUserListErrorMessage
+import com.example.githubusers.util.constants.requestUserProfileErrorMessage
+import com.example.githubusers.util.constants.somethingWentWrongErrorMessage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

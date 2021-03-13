@@ -6,7 +6,7 @@ import com.example.githubusers.data.local.dao.UsersDao
 import com.example.githubusers.data.local.entity.LocalProfile
 import com.example.githubusers.data.local.entity.LocalUser
 import com.example.githubusers.data.local.entity.UserWithProfile
-import com.example.githubusers.data.util.constants.*
+import com.example.githubusers.util.constants.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

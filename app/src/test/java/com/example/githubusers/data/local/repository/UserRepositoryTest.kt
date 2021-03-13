@@ -5,7 +5,7 @@ import com.example.githubusers.data.local.dao.UsersDao
 import com.example.githubusers.data.local.entity.LocalProfile
 import com.example.githubusers.data.local.entity.LocalUser
 import com.example.githubusers.data.local.entity.UserWithProfile
-import com.example.githubusers.data.util.constants.*
+import com.example.githubusers.util.constants.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest

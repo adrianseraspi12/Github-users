@@ -4,8 +4,8 @@ import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.githubusers.data.util.constants.idColumn
-import com.example.githubusers.data.util.constants.userTableName
+import com.example.githubusers.util.constants.idColumn
+import com.example.githubusers.util.constants.userTableName
 
 @Entity(tableName = userTableName)
 data class LocalUser(

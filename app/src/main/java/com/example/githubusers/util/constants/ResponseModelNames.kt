@@ -1,4 +1,4 @@
-package com.example.githubusers.data.util.constants
+package com.example.githubusers.util.constants
 
 const val login = "login"
 const val avatarUrl = "avatarUrl"
