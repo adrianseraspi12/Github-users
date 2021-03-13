@@ -5,6 +5,7 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.example.githubusers.data.local.UsersDatabase
+import com.example.githubusers.data.local.entity.LocalProfile
 import com.example.githubusers.data.local.entity.LocalUser
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
@@ -35,34 +36,20 @@ class UsersDaoTest {
     fun insertListOfUsersAndGetAllUsers() {
         val listOfUsers = listOf(
             LocalUser(
-                0, "john",
+                0,
+                    "john",
                 "https://www.jd.com/png",
-                "John Doe",
-                12,
-                10,
-                "Apple",
-                "www.apple.com",
-                ""
+                "",
             ),
             LocalUser(
                 1, "jane",
                 "https://www.jnd.com/png",
-                "Jane Doe",
-                8,
-                14,
-                "Orange",
-                "www.orange.com",
-                "Hello Jane Doe"
+                "Visit my blog",
             ),
             LocalUser(
                 2, "uncle",
                 "https://www.ub.com/png",
-                "Uncle Bob",
-                101,
-                8,
-                "Clean code",
-                "www.cleancode.com",
-                "Welcome Uncle"
+                "notes to uncle",
             )
         )
 
@@ -78,16 +65,11 @@ class UsersDaoTest {
     @Test
     fun insertUserAndGetUserById() {
         val user = LocalUser(
-            0, "john",
-            "https://www.jd.com/png",
-            "John Doe",
-            12,
-            10,
-            "Apple",
-            "www.apple.com",
-            ""
+                0,
+                "john",
+                "https://www.jd.com/png",
+                "",
         )
-
         usersDatabase.usersDao().insertAll(listOf(user))
 
         val userFromDb = usersDatabase.usersDao().findUserById(0)
@@ -96,11 +78,6 @@ class UsersDaoTest {
         Assert.assertEquals(userFromDb.id, user.id)
         Assert.assertEquals(userFromDb.username, user.username)
         Assert.assertEquals(userFromDb.image, user.image)
-        Assert.assertEquals(userFromDb.name, user.name)
-        Assert.assertEquals(userFromDb.followersCount, user.followersCount)
-        Assert.assertEquals(userFromDb.followingCount, user.followingCount)
-        Assert.assertEquals(userFromDb.company, user.company)
-        Assert.assertEquals(userFromDb.blog, user.blog)
         Assert.assertEquals(userFromDb.notes, user.notes)
     }
 
@@ -108,27 +85,19 @@ class UsersDaoTest {
     fun updateUserAndGetById() {
         //  Insert a user
         val user = LocalUser(
-            0, "john",
-            "https://www.jd.com/png",
-            "John Doe",
-            12,
-            10,
-            "Apple",
-            "www.apple.com",
-            ""
+                0,
+                "john",
+                "https://www.jd.com/png",
+                "",
         )
         usersDatabase.usersDao().insertAll(listOf(user))
 
         //  Update user
         val updatedUser = LocalUser(
-            0, "johnny",
-            "https://www.jd.com/png",
-            "Johnny Doe",
-            15,
-            12,
-            "Apple",
-            "www.apple.com",
-            ""
+                0,
+                "john",
+                "https://www.jd.com/png",
+                "",
         )
         usersDatabase.usersDao().updateUser(updatedUser)
 
@@ -138,11 +107,6 @@ class UsersDaoTest {
         Assert.assertEquals(updatedUserFromDb.id, updatedUser.id)
         Assert.assertEquals(updatedUserFromDb.username, updatedUser.username)
         Assert.assertEquals(updatedUserFromDb.image, updatedUser.image)
-        Assert.assertEquals(updatedUserFromDb.name, updatedUser.name)
-        Assert.assertEquals(updatedUserFromDb.followersCount, updatedUser.followersCount)
-        Assert.assertEquals(updatedUserFromDb.followingCount, updatedUser.followingCount)
-        Assert.assertEquals(updatedUserFromDb.company, updatedUser.company)
-        Assert.assertEquals(updatedUserFromDb.blog, updatedUser.blog)
         Assert.assertEquals(updatedUserFromDb.notes, updatedUser.notes)
     }
 
@@ -150,14 +114,10 @@ class UsersDaoTest {
     fun insertUserThenDeleteAllUserAndGetAllUser() {
         //  Insert a user
         val user = LocalUser(
-            0, "john",
-            "https://www.jd.com/png",
-            "John Doe",
-            12,
-            10,
-            "Apple",
-            "www.apple.com",
-            ""
+                0,
+                "john",
+                "https://www.jd.com/png",
+                "",
         )
         usersDatabase.usersDao().insertAll(listOf(user))
 
@@ -168,6 +128,54 @@ class UsersDaoTest {
         val listOfUserFromDb = usersDatabase.usersDao().getAllUsers()
         Assert.assertNotNull(listOfUserFromDb)
         Assert.assertTrue(listOfUserFromDb.isEmpty())
+    }
+
+    @Test
+    fun insertUserWithProfileThenGetAllUserWithProfile() {
+        //  Insert a user
+        val user = LocalUser(
+                0,
+                "john",
+                "https://www.jd.com/png",
+                "",
+        )
+        usersDatabase.usersDao().insertAll(listOf(user))
+
+        //  Insert profile
+        val profile =  LocalProfile(
+                0,
+                user.id!!,
+                "John doe",
+                23,
+                12,
+                "Apple",
+                "www.apple.com"
+        )
+        usersDatabase.profileDao().insertProfile(profile)
+
+        //  Execute get user with profile and check
+        val listOfUserWithProfile = usersDatabase.usersDao().getAllUserWithProfile()
+        Assert.assertEquals(listOfUserWithProfile.size, 1)
+        Assert.assertEquals(listOfUserWithProfile[0].user, user)
+        Assert.assertEquals(listOfUserWithProfile[0].profile, profile)
+    }
+
+    @Test
+    fun insertUserWithNoProfileThenGetAllUserWithNoProfile() {
+        //  Insert a user
+        val user = LocalUser(
+                0,
+                "john",
+                "https://www.jd.com/png",
+                "",
+        )
+        usersDatabase.usersDao().insertAll(listOf(user))
+
+        //  Execute get user with profile and check
+        val listOfUserWithProfile = usersDatabase.usersDao().getAllUserWithProfile()
+        Assert.assertEquals(listOfUserWithProfile.size, 1)
+        Assert.assertEquals(listOfUserWithProfile[0].user, user)
+        Assert.assertNull(listOfUserWithProfile[0].profile)
     }
 
     @After

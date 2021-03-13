@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.githubusers.data.local.entity.LocalUser
+import com.example.githubusers.data.local.entity.UserWithProfile
 
 @Dao
 interface UsersDao {
@@ -22,4 +23,7 @@ interface UsersDao {
 
     @Query("DELETE FROM users")
     fun deleteAll()
+
+    @Query("SELECT * FROM users")
+    fun getAllUserWithProfile(): List<UserWithProfile>
 }
