@@ -146,6 +146,7 @@ class UsersDaoTest {
                 0,
                 user.id!!,
                 "John doe",
+                "",
                 23,
                 12,
                 "Apple",
