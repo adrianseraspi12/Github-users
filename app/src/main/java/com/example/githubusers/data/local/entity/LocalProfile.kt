@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.githubusers.util.constants.*
+import java.io.Serializable
 
 @Entity(tableName = profileTableName)
 data class LocalProfile(
@@ -17,4 +18,4 @@ data class LocalProfile(
     @ColumnInfo(name = followingCountColumn) var followingCount: Int? = null,
     var company: String? = null,
     var blog: String? = null,
-)
+) : Serializable
