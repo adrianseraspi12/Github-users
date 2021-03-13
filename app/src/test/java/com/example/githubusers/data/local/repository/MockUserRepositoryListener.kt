@@ -1,6 +1,8 @@
 package com.example.githubusers.data.local.repository
 
-class MockUserRepositoryListener<T : Any?> : IUserRepository.Listener<T> {
+import com.example.githubusers.data.Listener
+
+class MockUserRepositoryListener<T : Any?> : Listener<T> {
 
     var data: T? = null
     var isSuccessCalled: Boolean = false

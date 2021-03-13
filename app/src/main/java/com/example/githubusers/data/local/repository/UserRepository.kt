@@ -1,5 +1,6 @@
 package com.example.githubusers.data.local.repository
 
+import com.example.githubusers.data.Listener
 import com.example.githubusers.data.local.dao.ProfileDao
 import com.example.githubusers.data.local.dao.UsersDao
 import com.example.githubusers.data.local.entity.LocalProfile
@@ -15,7 +16,7 @@ class UserRepository(
     private val profileDao: ProfileDao,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IUserRepository {
-    override suspend fun getAllUsers(listener: IUserRepository.Listener<List<LocalUser>>) =
+    override suspend fun getAllUsers(listener: Listener<List<LocalUser>>) =
         withContext(ioDispatcher) {
             try {
                 val listOfUsers = usersDao.getAllUsers()
@@ -25,7 +26,7 @@ class UserRepository(
             }
         }
 
-    override suspend fun getAllUserWithProfile(listener: IUserRepository.Listener<List<UserWithProfile>>) =
+    override suspend fun getAllUserWithProfile(listener: Listener<List<UserWithProfile>>) =
         withContext(ioDispatcher) {
             try {
                 val listOfUserWithProfile = usersDao.getAllUserWithProfile()
@@ -35,7 +36,7 @@ class UserRepository(
             }
         }
 
-    override suspend fun getUser(id: Int, listener: IUserRepository.Listener<LocalUser>) =
+    override suspend fun getUser(id: Int, listener: Listener<LocalUser>) =
         withContext(ioDispatcher) {
             try {
                 val user = usersDao.findUserById(id)
@@ -47,7 +48,7 @@ class UserRepository(
 
     override suspend fun insertProfile(
         profile: LocalProfile,
-        listener: IUserRepository.Listener<Any>
+        listener: Listener<Any>
     ) = withContext(ioDispatcher) {
         try {
             profileDao.insertProfile(profile)
@@ -59,7 +60,7 @@ class UserRepository(
 
     override suspend fun updateProfile(
         profile: LocalProfile,
-        listener: IUserRepository.Listener<Any>
+        listener: Listener<Any>
     ) = withContext(ioDispatcher) {
         try {
             profileDao.updateProfile(profile)
@@ -69,7 +70,7 @@ class UserRepository(
         }
     }
 
-    override suspend fun updateUser(user: LocalUser, listener: IUserRepository.Listener<Any>) =
+    override suspend fun updateUser(user: LocalUser, listener: Listener<Any>) =
         withContext(ioDispatcher) {
             try {
                 usersDao.updateUser(user)
@@ -79,7 +80,7 @@ class UserRepository(
             }
         }
 
-    override suspend fun saveAll(user: List<LocalUser>, listener: IUserRepository.Listener<Any>) =
+    override suspend fun saveAll(user: List<LocalUser>, listener: Listener<Any>) =
         withContext(ioDispatcher) {
             try {
                 usersDao.insertAll(user)
@@ -89,7 +90,7 @@ class UserRepository(
             }
         }
 
-    override suspend fun deleteAllUser(listener: IUserRepository.Listener<Any>) =
+    override suspend fun deleteAllUser(listener: Listener<Any>) =
         withContext(ioDispatcher) {
             try {
                 usersDao.deleteAll()

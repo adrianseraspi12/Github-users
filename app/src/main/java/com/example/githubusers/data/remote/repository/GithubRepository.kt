@@ -1,5 +1,6 @@
 package com.example.githubusers.data.remote.repository
 
+import com.example.githubusers.data.Listener
 import com.example.githubusers.data.remote.model.ProfileResponse
 import com.example.githubusers.data.remote.model.UserResponse
 import com.example.githubusers.data.remote.service.GithubClient
@@ -20,7 +21,7 @@ class GithubRepository(
 
     override suspend fun requestUserList(
         page: Int,
-        listener: IGithubRepository.Listener<List<UserResponse>>
+        listener: Listener<List<UserResponse>>
     ) = withContext(ioDispatcher) {
         client.getUserList(page).enqueue(object : Callback<List<UserResponse>> {
             override fun onResponse(
@@ -43,7 +44,7 @@ class GithubRepository(
 
     override suspend fun requestUserProfile(
         username: String,
-        listener: IGithubRepository.Listener<ProfileResponse>
+        listener: Listener<ProfileResponse>
     ) = withContext(ioDispatcher) {
         client.getProfile(username).enqueue(object : Callback<ProfileResponse> {
             override fun onResponse(
