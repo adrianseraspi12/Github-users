@@ -1,5 +1,6 @@
 package com.example.githubusers.view.userlist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +10,27 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubusers.data.local.entity.UserWithProfile
 import com.example.githubusers.databinding.FragmentUserListBinding
 import com.example.githubusers.view.adapter.UserListAdapter
+import com.example.githubusers.view.profile.ProfileActivity
+import com.example.githubusers.view.profile.USER_PROFILE_ARG
 
 class UserListFragment : Fragment(), UserListContract.View {
 
     private var _binding: FragmentUserListBinding? = null
-    private val userListAdapter = UserListAdapter()
     private val binding get() = _binding!!
     private lateinit var presenter: UserListContract.Presenter
+    private lateinit var userListAdapter: UserListAdapter
 
     companion object {
         fun newInstance() = UserListFragment()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        userListAdapter = UserListAdapter {
+            val intent = Intent(context, ProfileActivity::class.java)
+            intent.putExtra(USER_PROFILE_ARG, it)
+            startActivity(intent)
+        }
     }
 
     override fun onCreateView(

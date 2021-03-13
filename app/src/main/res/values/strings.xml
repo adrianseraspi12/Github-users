@@ -2,4 +2,9 @@
     <string name="app_name">Github Users</string>
     <string name="user_image">User Image</string>
     <string name="notes">notes</string>
+    <string name="profile_image">profile image</string>
+    <string name="followers">followers:</string>
+    <string name="following">following</string>
+    <string name="notes_title">Notes</string>
+    <string name="save">Save</string>
 </resources>

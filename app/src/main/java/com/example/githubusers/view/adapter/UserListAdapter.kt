@@ -8,7 +8,8 @@ import com.bumptech.glide.Glide
 import com.example.githubusers.data.local.entity.UserWithProfile
 import com.example.githubusers.databinding.ItemUsersBinding
 
-class UserListAdapter : RecyclerView.Adapter<UserListAdapter.ViewHolder>() {
+class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit) :
+    RecyclerView.Adapter<UserListAdapter.ViewHolder>() {
 
     private var data: List<UserWithProfile> = listOf()
 
@@ -21,6 +22,9 @@ class UserListAdapter : RecyclerView.Adapter<UserListAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val userWithProfile = data[position]
         holder.bind(userWithProfile)
+        holder.binding.usersRootContainer.setOnClickListener {
+            onClickItemListener.invoke(userWithProfile)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -32,7 +36,7 @@ class UserListAdapter : RecyclerView.Adapter<UserListAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
-    class ViewHolder(private val binding: ItemUsersBinding) :
+    class ViewHolder(val binding: ItemUsersBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(userWithProfile: UserWithProfile) {

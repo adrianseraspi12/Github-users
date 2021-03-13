@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.githubusers.util.constants.idColumn
 import com.example.githubusers.util.constants.userTableName
+import java.io.Serializable
 
 @Entity(tableName = userTableName)
 data class LocalUser(
@@ -16,4 +17,4 @@ data class LocalUser(
         var username: String? = null,
         var image: String? = null,
         var notes: String? = null,
-)
+) : Serializable
