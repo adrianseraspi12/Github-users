@@ -145,6 +145,7 @@ class GithubRepositoryTest {
         val profileResponse = ProfileResponse(
                 "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe-21/@@images/image/large",
                 "John Doe",
+                "",
                 58,
                 34,
                 "Apple",

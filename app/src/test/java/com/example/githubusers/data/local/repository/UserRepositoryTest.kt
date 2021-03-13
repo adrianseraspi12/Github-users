@@ -159,6 +159,7 @@ class UserRepositoryTest {
         val profile = LocalProfile(
                 0, 0,
                 "John Doe",
+                "",
                 12,
                 23,
                 "Apple",
