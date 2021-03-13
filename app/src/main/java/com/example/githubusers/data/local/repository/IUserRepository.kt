@@ -1,6 +1,5 @@
 package com.example.githubusers.data.local.repository
 
-import com.example.githubusers.data.Listener
 import com.example.githubusers.data.Result
 import com.example.githubusers.data.local.entity.LocalProfile
 import com.example.githubusers.data.local.entity.LocalUser

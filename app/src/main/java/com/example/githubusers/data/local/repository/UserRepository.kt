@@ -12,9 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class UserRepository(
-    private val usersDao: UsersDao,
-    private val profileDao: ProfileDao,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+        private val usersDao: UsersDao,
+        private val profileDao: ProfileDao,
+        private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IUserRepository {
 
     override suspend fun getAllUsers(): Result<List<LocalUser>> = withContext(ioDispatcher) {
@@ -26,13 +26,13 @@ class UserRepository(
     }
 
     override suspend fun getAllUserWithProfile(): Result<List<UserWithProfile>> =
-        withContext(ioDispatcher) {
-            return@withContext try {
-                Result.onSuccess(usersDao.getAllUserWithProfile())
-            } catch (e: Exception) {
-                Result.onFailed(getAllUserWithProfileErrorMessage)
+            withContext(ioDispatcher) {
+                return@withContext try {
+                    Result.onSuccess(usersDao.getAllUserWithProfile())
+                } catch (e: Exception) {
+                    Result.onFailed(getAllUserWithProfileErrorMessage)
+                }
             }
-        }
 
     override suspend fun getUser(id: Int): Result<LocalUser> = withContext(ioDispatcher) {
         return@withContext try {
@@ -43,24 +43,24 @@ class UserRepository(
     }
 
     override suspend fun insertProfile(profile: LocalProfile): Result<Nothing> =
-        withContext(ioDispatcher) {
-            return@withContext try {
-                profileDao.insertProfile(profile)
-                Result.onSuccess()
-            } catch (e: Exception) {
-                Result.onFailed(insertProfileErrorMessage)
+            withContext(ioDispatcher) {
+                return@withContext try {
+                    profileDao.insertProfile(profile)
+                    Result.onSuccess()
+                } catch (e: Exception) {
+                    Result.onFailed(insertProfileErrorMessage)
+                }
             }
-        }
 
     override suspend fun updateProfile(profile: LocalProfile): Result<Nothing> =
-        withContext(ioDispatcher) {
-            return@withContext try {
-                profileDao.updateProfile(profile)
-                Result.onSuccess()
-            } catch (e: Exception) {
-                Result.onFailed(updateProfileErrorMessage)
+            withContext(ioDispatcher) {
+                return@withContext try {
+                    profileDao.updateProfile(profile)
+                    Result.onSuccess()
+                } catch (e: Exception) {
+                    Result.onFailed(updateProfileErrorMessage)
+                }
             }
-        }
 
     override suspend fun updateUser(user: LocalUser): Result<Nothing> = withContext(ioDispatcher) {
         return@withContext try {
@@ -72,14 +72,14 @@ class UserRepository(
     }
 
     override suspend fun saveAll(user: List<LocalUser>): Result<Nothing> =
-        withContext(ioDispatcher) {
-            return@withContext try {
-                usersDao.insertAll(user)
-                Result.onSuccess()
-            } catch (e: Exception) {
-                Result.onFailed(saveAllErrorMessage)
+            withContext(ioDispatcher) {
+                return@withContext try {
+                    usersDao.insertAll(user)
+                    Result.onSuccess()
+                } catch (e: Exception) {
+                    Result.onFailed(saveAllErrorMessage)
+                }
             }
-        }
 
     override suspend fun deleteAllUser(): Result<Nothing> = withContext(ioDispatcher) {
         return@withContext try {
