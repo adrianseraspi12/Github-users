@@ -1,6 +1,8 @@
 package com.example.githubusers.data.remote.repository
 
-class MockGithubRepositoryListener<T> : IGithubRepository.Listener<T> {
+import com.example.githubusers.data.remote.Listener
+
+class MockGithubRepositoryListener<T> : Listener<T> {
     var data: T? = null
     var isSuccessCalled: Boolean = false
     var errorMessage: String = ""

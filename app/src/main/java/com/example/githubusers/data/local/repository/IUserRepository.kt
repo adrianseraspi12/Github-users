@@ -1,31 +1,25 @@
 package com.example.githubusers.data.local.repository
 
+import com.example.githubusers.data.local.Result
 import com.example.githubusers.data.local.entity.LocalProfile
 import com.example.githubusers.data.local.entity.LocalUser
 import com.example.githubusers.data.local.entity.UserWithProfile
 
 interface IUserRepository {
 
-    interface Listener<T : Any?> {
+    suspend fun getAllUsers(): Result<List<LocalUser>>
 
-        fun onSuccess(data: T? = null)
-        fun onFailed(errorMessage: String)
+    suspend fun getAllUserWithProfile(): Result<List<UserWithProfile>>
 
-    }
+    suspend fun getUser(id: Int): Result<LocalUser>
 
-    suspend fun getAllUsers(listener: Listener<List<LocalUser>>)
+    suspend fun insertProfile(profile: LocalProfile): Result<Nothing>
 
-    suspend fun getAllUserWithProfile(listener: Listener<List<UserWithProfile>>)
+    suspend fun updateProfile(profile: LocalProfile): Result<Nothing>
 
-    suspend fun getUser(id: Int, listener: Listener<LocalUser>)
+    suspend fun updateUser(user: LocalUser): Result<Nothing>
 
-    suspend fun insertProfile(profile: LocalProfile, listener: Listener<Any>)
+    suspend fun saveAll(user: List<LocalUser>): Result<Nothing>
 
-    suspend fun updateProfile(profile: LocalProfile, listener: Listener<Any>)
-
-    suspend fun updateUser(user: LocalUser, listener: Listener<Any>)
-
-    suspend fun saveAll(user: List<LocalUser>, listener: Listener<Any>)
-
-    suspend fun deleteAllUser(listener: Listener<Any>)
+    suspend fun deleteAllUser(): Result<Nothing>
 }

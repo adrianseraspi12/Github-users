@@ -1,8 +1,8 @@
 package com.example.githubusers.data.remote.model
 
-import com.example.githubusers.data.util.constants.avatarUrl
-import com.example.githubusers.data.util.constants.followers
-import com.example.githubusers.data.util.constants.following
+import com.example.githubusers.util.constants.avatarUrl
+import com.example.githubusers.util.constants.followers
+import com.example.githubusers.util.constants.following
 import com.google.gson.annotations.SerializedName
 
 data class ProfileResponse(

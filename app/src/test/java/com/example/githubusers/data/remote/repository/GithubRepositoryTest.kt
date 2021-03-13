@@ -3,9 +3,9 @@ package com.example.githubusers.data.remote.repository
 import com.example.githubusers.data.remote.model.ProfileResponse
 import com.example.githubusers.data.remote.model.UserResponse
 import com.example.githubusers.data.remote.service.GithubClient
-import com.example.githubusers.data.util.constants.requestUserListErrorMessage
-import com.example.githubusers.data.util.constants.requestUserProfileErrorMessage
-import com.example.githubusers.data.util.constants.somethingWentWrongErrorMessage
+import com.example.githubusers.util.constants.requestUserListErrorMessage
+import com.example.githubusers.util.constants.requestUserProfileErrorMessage
+import com.example.githubusers.util.constants.somethingWentWrongErrorMessage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
@@ -34,14 +34,14 @@ class GithubRepositoryTest {
     @Test
     fun test_When_RequestUserListIsSuccess_Should_ReturnListOfUser() = runBlockingTest {
         val listOfUserResponse = listOf(
-            UserResponse(
-                "John Doe",
-                "https://www.jnd.com/png"
-            ),
-            UserResponse(
-                "Jane Doe",
-                "https://www.jd.com/png"
-            )
+                UserResponse(
+                        "John Doe",
+                        "https://www.jnd.com/png"
+                ),
+                UserResponse(
+                        "Jane Doe",
+                        "https://www.jd.com/png"
+                )
         )
 
         //  Create a mock call for github client and
@@ -50,8 +50,8 @@ class GithubRepositoryTest {
         doAnswer {
             //  Setup mock api response
             (it.getArgument(0) as Callback<List<UserResponse>>).onResponse(
-                mockCall,
-                Response.success(200, listOfUserResponse)
+                    mockCall,
+                    Response.success(200, listOfUserResponse)
             )
         }.`when`(mockCall).enqueue(any())
 
@@ -72,13 +72,13 @@ class GithubRepositoryTest {
         doAnswer {
             //  Setup mock api response
             (it.getArgument(0) as Callback<List<UserResponse>>).onResponse(
-                mockCall,
-                Response.error(
-                    500, ResponseBody.create(
-                        MediaType.parse("application/json"),
-                        ""
+                    mockCall,
+                    Response.error(
+                            500, ResponseBody.create(
+                            MediaType.parse("application/json"),
+                            ""
                     )
-                )
+                    )
             )
         }.`when`(mockCall).enqueue(any())
 
@@ -100,8 +100,8 @@ class GithubRepositoryTest {
         doAnswer {
             //  Setup mock api response
             (it.getArgument(0) as Callback<List<UserResponse>>).onFailure(
-                mockCall,
-                throwable
+                    mockCall,
+                    throwable
             )
         }.`when`(mockCall).enqueue(any())
 
@@ -116,39 +116,39 @@ class GithubRepositoryTest {
 
     @Test
     fun test_When_RequestUserListFail_Should_ReturnSomethingWentWrongErrorMessage() =
-        runBlockingTest {
-            //  Create a mock call for github client and
-            val mockCall: Call<List<UserResponse>> = mock()
-            `when`(client.getUserList(0)).thenReturn(mockCall)
-            doAnswer {
-                //  Setup mock api response
-                (it.getArgument(0) as Callback<List<UserResponse>>).onFailure(
-                    mockCall,
-                    Throwable()
+            runBlockingTest {
+                //  Create a mock call for github client and
+                val mockCall: Call<List<UserResponse>> = mock()
+                `when`(client.getUserList(0)).thenReturn(mockCall)
+                doAnswer {
+                    //  Setup mock api response
+                    (it.getArgument(0) as Callback<List<UserResponse>>).onFailure(
+                            mockCall,
+                            Throwable()
+                    )
+                }.`when`(mockCall).enqueue(any())
+
+                val mockGithubRepositoryListener = MockGithubRepositoryListener<List<UserResponse>>()
+                githubRepository.requestUserList(0, mockGithubRepositoryListener)
+
+                //  Check the listener
+                Assert.assertFalse(mockGithubRepositoryListener.isSuccessCalled)
+                Assert.assertEquals(
+                        mockGithubRepositoryListener.errorMessage,
+                        somethingWentWrongErrorMessage
                 )
-            }.`when`(mockCall).enqueue(any())
-
-            val mockGithubRepositoryListener = MockGithubRepositoryListener<List<UserResponse>>()
-            githubRepository.requestUserList(0, mockGithubRepositoryListener)
-
-            //  Check the listener
-            Assert.assertFalse(mockGithubRepositoryListener.isSuccessCalled)
-            Assert.assertEquals(
-                mockGithubRepositoryListener.errorMessage,
-                somethingWentWrongErrorMessage
-            )
-            Assert.assertNull(mockGithubRepositoryListener.data)
-        }
+                Assert.assertNull(mockGithubRepositoryListener.data)
+            }
 
     @Test
     fun test_When_RequestUserProfileIsSuccess_Should_ReturnUserProfile() = runBlockingTest {
         val profileResponse = ProfileResponse(
-            "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe-21/@@images/image/large",
-            "John Doe",
-            58,
-            34,
-            "Apple",
-            "www.apple.com"
+                "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe-21/@@images/image/large",
+                "John Doe",
+                58,
+                34,
+                "Apple",
+                "www.apple.com"
         )
 
         //  Create a mock call for github client and
@@ -157,8 +157,8 @@ class GithubRepositoryTest {
         `when`(client.getProfile("johndoe")).thenReturn(mockCall)
         doAnswer {
             (it.getArgument(0) as Callback<ProfileResponse>).onResponse(
-                mockCall,
-                Response.success(200, profileResponse)
+                    mockCall,
+                    Response.success(200, profileResponse)
             )
         }.`when`(mockCall).enqueue(any())
 
@@ -180,11 +180,11 @@ class GithubRepositoryTest {
         doAnswer {
             //  Setup mock api response
             (it.getArgument(0) as Callback<ProfileResponse>).onResponse(
-                mockCall,
-                Response.error(
-                    500,
-                    ResponseBody.create(MediaType.parse("application/json"), "")
-                )
+                    mockCall,
+                    Response.error(
+                            500,
+                            ResponseBody.create(MediaType.parse("application/json"), "")
+                    )
             )
         }.`when`(mockCall).enqueue(any())
 
@@ -195,8 +195,8 @@ class GithubRepositoryTest {
         //  Check the listener
         Assert.assertFalse(mockGithubRepositoryListener.isSuccessCalled)
         Assert.assertEquals(
-            mockGithubRepositoryListener.errorMessage,
-            requestUserProfileErrorMessage
+                mockGithubRepositoryListener.errorMessage,
+                requestUserProfileErrorMessage
         )
         Assert.assertNull(mockGithubRepositoryListener.data)
     }
@@ -210,8 +210,8 @@ class GithubRepositoryTest {
         doAnswer {
             //  Setup mock api response
             (it.getArgument(0) as Callback<ProfileResponse>).onFailure(
-                mockCall,
-                throwable
+                    mockCall,
+                    throwable
             )
         }.`when`(mockCall).enqueue(any())
 
@@ -226,29 +226,29 @@ class GithubRepositoryTest {
 
     @Test
     fun test_When_RequestUserProfileFail_Should_ReturnSomethingWentWrongErrorMessage() =
-        runBlockingTest {
-            //  Create a mock call for github client and
-            val mockCall: Call<ProfileResponse> = mock()
-            `when`(client.getProfile("johndoe")).thenReturn(mockCall)
-            doAnswer {
-                //  Setup mock api response
-                (it.getArgument(0) as Callback<ProfileResponse>).onFailure(
-                    mockCall,
-                    Throwable()
+            runBlockingTest {
+                //  Create a mock call for github client and
+                val mockCall: Call<ProfileResponse> = mock()
+                `when`(client.getProfile("johndoe")).thenReturn(mockCall)
+                doAnswer {
+                    //  Setup mock api response
+                    (it.getArgument(0) as Callback<ProfileResponse>).onFailure(
+                            mockCall,
+                            Throwable()
+                    )
+                }.`when`(mockCall).enqueue(any())
+
+                val mockGithubRepositoryListener = MockGithubRepositoryListener<ProfileResponse>()
+                githubRepository.requestUserProfile("johndoe", mockGithubRepositoryListener)
+
+                //  Check the listener
+                Assert.assertFalse(mockGithubRepositoryListener.isSuccessCalled)
+                Assert.assertEquals(
+                        mockGithubRepositoryListener.errorMessage,
+                        somethingWentWrongErrorMessage
                 )
-            }.`when`(mockCall).enqueue(any())
-
-            val mockGithubRepositoryListener = MockGithubRepositoryListener<ProfileResponse>()
-            githubRepository.requestUserProfile("johndoe", mockGithubRepositoryListener)
-
-            //  Check the listener
-            Assert.assertFalse(mockGithubRepositoryListener.isSuccessCalled)
-            Assert.assertEquals(
-                mockGithubRepositoryListener.errorMessage,
-                somethingWentWrongErrorMessage
-            )
-            Assert.assertNull(mockGithubRepositoryListener.data)
-        }
+                Assert.assertNull(mockGithubRepositoryListener.data)
+            }
 
     private inline fun <reified T : Any> mock(): T = mock(T::class.java)!!
 

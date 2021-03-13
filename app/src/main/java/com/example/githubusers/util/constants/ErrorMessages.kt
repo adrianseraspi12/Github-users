@@ -1,4 +1,4 @@
-package com.example.githubusers.data.util.constants
+package com.example.githubusers.util.constants
 
 const val getAllUsersErrorMessage = "Unable to get all users."
 const val getUserErrorMessage = "Unable to get user profile."
