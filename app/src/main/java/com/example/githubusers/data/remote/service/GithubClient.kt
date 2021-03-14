@@ -17,7 +17,7 @@ interface GithubClient {
         @Query(sinceQuery) page: Int,
     ): Call<List<UserResponse>>
 
-    @GET("$users{$usernamePath}")
+    @GET("$users/{$usernamePath}")
     fun getProfile(
         @Path(usernamePath) username: String,
     ): Call<ProfileResponse>

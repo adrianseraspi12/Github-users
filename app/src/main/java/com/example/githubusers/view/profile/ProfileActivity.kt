@@ -1,13 +1,18 @@
 package com.example.githubusers.view.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.example.githubusers.Injection
 import com.example.githubusers.data.local.entity.UserWithProfile
 import com.example.githubusers.data.main.repository.MainRepository
 import com.example.githubusers.databinding.ActivityProfileBinding
+import kotlinx.coroutines.Dispatchers
+
 
 const val USER_PROFILE_ARG = "userProfileArg"
+const val UPDATED_NOTE_RESULT_ARG = "newNoteResultArg"
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -30,6 +35,12 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    fun passResultFromFragmentToPreviousFragment(userWithProfile: UserWithProfile) {
+        val resultIntent = Intent()
+        resultIntent.putExtra(UPDATED_NOTE_RESULT_ARG, userWithProfile)
+        setResult(RESULT_OK, resultIntent)
+    }
+
     private fun bindView() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         val view = binding.root
@@ -49,7 +60,12 @@ class ProfileActivity : AppCompatActivity() {
 
         //  Initialize presenter and profile fragment
         val profileFragment = ProfileFragment.newInstance()
-        ProfilePresenter(profileFragment, userProfile, MainRepository())
+        val mainRepository = MainRepository(
+            Injection.provideUserRepository(applicationContext),
+            Injection.provideGithubRepository(),
+            Dispatchers.IO
+        )
+        ProfilePresenter(profileFragment, userProfile, mainRepository)
 
         //  setup fragment view
         val fm = supportFragmentManager

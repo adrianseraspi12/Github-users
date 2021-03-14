@@ -1,18 +1,23 @@
-package com.example.githubusers.data.remote.repository
+package com.example.githubusers.data.main
 
 import com.example.githubusers.data.remote.Listener
 
-class MockGithubRepositoryListener<T> : Listener<T> {
+class MockMainRepositoryListener<T>: Listener<T> {
+
     var data: T? = null
-    var isSuccessCalled: Boolean = false
-    var errorMessage: String = ""
+    var isSuccess = false
+    var errorMessage: String? = null
+
 
     override fun onSuccess(data: T?) {
         this.data = data
-        this.isSuccessCalled = true
+        this.isSuccess = true
     }
 
     override fun onFailed(errorMessage: String) {
+        this.isSuccess = false
         this.errorMessage = errorMessage
     }
+
+
 }
