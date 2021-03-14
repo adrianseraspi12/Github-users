@@ -10,7 +10,6 @@ import com.example.githubusers.data.remote.model.UserResponse
 import com.example.githubusers.data.remote.repository.IGithubRepository
 import com.example.githubusers.util.constants.requestUserListErrorMessage
 import com.example.githubusers.util.constants.somethingWentWrongErrorMessage
-import com.example.githubusers.util.constants.updateUserErrorMessage
 import com.example.githubusers.util.extensions.toLocalProfile
 import com.example.githubusers.util.extensions.toLocalUser
 import kotlinx.coroutines.*
@@ -57,8 +56,10 @@ class MainRepository(
         if (result is Result.onSuccess) {
             listener.onSuccess()
             return
+        } else {
+            val errorResult = result as Result.onFailed
+            listener.onFailed(errorResult.errorMessage)
         }
-        listener.onFailed(updateUserErrorMessage)
     }
 
     private suspend fun getListFromLocal(): List<UserWithProfile> {
@@ -130,7 +131,7 @@ class MainRepository(
             }
 
             //  Set the notes of remote object
-            mutableListFromRemote[index].user?.notes = userWithProfileLocal?.user?.notes
+            mutableListFromRemote[index].user?.notes = userWithProfileLocal?.user?.notes ?: ""
         }
         return listFromRemote
     }
