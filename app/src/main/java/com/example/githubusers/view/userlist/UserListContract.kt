@@ -12,6 +12,8 @@ interface UserListContract {
 
         fun showLoading()
 
+        fun stopLoading()
+
     }
 
     interface Presenter {

@@ -58,12 +58,15 @@ class UserListFragment : Fragment(), UserListContract.View {
     }
 
     override fun setUserList(list: List<UserWithProfile>) {
-        binding.userListProgressbar.visibility = View.GONE
         userListAdapter.updateData(list)
     }
 
     override fun showLoading() {
-//        binding.userListProgressbar.visibility = View.VISIBLE
+        binding.userListProgressbar.visibility = View.VISIBLE
+    }
+
+    override fun stopLoading() {
+        binding.userListProgressbar.visibility = View.GONE
     }
 
     private fun setupRecyclerView() {
