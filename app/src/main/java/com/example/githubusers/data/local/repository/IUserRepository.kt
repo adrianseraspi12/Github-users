@@ -19,7 +19,7 @@ interface IUserRepository {
 
     suspend fun updateUser(user: LocalUser): Result<Nothing>
 
-    suspend fun saveAll(user: List<LocalUser>): Result<Nothing>
+    suspend fun insertUser(user: LocalUser): Result<Nothing>
 
     suspend fun deleteAllUser(): Result<Nothing>
 }

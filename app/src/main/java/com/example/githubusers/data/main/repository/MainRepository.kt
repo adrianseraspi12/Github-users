@@ -2,6 +2,7 @@ package com.example.githubusers.data.main.repository
 
 import com.example.githubusers.data.local.Result
 import com.example.githubusers.data.local.entity.LocalProfile
+import com.example.githubusers.data.local.entity.LocalUser
 import com.example.githubusers.data.local.entity.UserWithProfile
 import com.example.githubusers.data.local.repository.IUserRepository
 import com.example.githubusers.data.remote.Listener
@@ -9,42 +10,55 @@ import com.example.githubusers.data.remote.model.UserResponse
 import com.example.githubusers.data.remote.repository.IGithubRepository
 import com.example.githubusers.util.constants.requestUserListErrorMessage
 import com.example.githubusers.util.constants.somethingWentWrongErrorMessage
+import com.example.githubusers.util.constants.updateUserErrorMessage
 import com.example.githubusers.util.extensions.toLocalProfile
 import com.example.githubusers.util.extensions.toLocalUser
 import kotlinx.coroutines.*
 
 class MainRepository(
-        private val localRepository: IUserRepository,
-        private val remoteRepository: IGithubRepository,
-        private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val localRepository: IUserRepository,
+    private val remoteRepository: IGithubRepository,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IMainRepository {
-    override suspend fun loadUserList(listener: Listener<List<UserWithProfile>>) = withContext(ioDispatcher) {
-        try {
-            //  Show list of users from local if available
-            val listFromLocal = getListFromLocal()
-            if (listFromLocal.isNotEmpty()) {
-                listener.onSuccess(listFromLocal)
-            }
-            //  Call fail if list from local and remote is
-            //  not available
-            val listFromRemote = getListFromRemote()
-            if (listFromLocal.isEmpty() && listFromRemote.isEmpty()) {
-                listener.onFailed(requestUserListErrorMessage)
-                return@withContext
-            }
+    override suspend fun loadUserList(listener: Listener<List<UserWithProfile>>) =
+        withContext(ioDispatcher) {
+            try {
+                //  Show list of users from local if available
+                val listFromLocal = getListFromLocal()
+                if (listFromLocal.isNotEmpty()) {
+                    listener.onSuccess(listFromLocal)
+                }
+                //  Call fail if list from local and remote is
+                //  not available
+                val listFromRemote = getListFromRemote()
+                if (listFromLocal.isEmpty() && listFromRemote.isEmpty()) {
+                    listener.onFailed(requestUserListErrorMessage)
+                    return@withContext
+                }
 
-            //  Convert the list from UserResponse to UserWithProfile
-            val listOfUserWithProfileFromRemote = convertToUserWithProfile(listFromRemote)
-            //  Merge the local and remote list to set the notes in remote list
-            val mergedUserWithProfileList = mergeLocalAndRemoteList(listFromLocal,
-                    listOfUserWithProfileFromRemote)
+                //  Convert the list from UserResponse to UserWithProfile
+                val listOfUserWithProfileFromRemote = convertToUserWithProfile(listFromRemote)
+                //  Merge the local and remote list to set the notes in remote list
+                val mergedUserWithProfileList = mergeLocalAndRemoteList(
+                    listFromLocal,
+                    listOfUserWithProfileFromRemote
+                )
 
-            //  Update the local database and show the list
-            saveToLocalDatabase(mergedUserWithProfileList)
-            listener.onSuccess(mergedUserWithProfileList)
-        } catch (e: Exception) {
-            listener.onFailed(e.message ?: somethingWentWrongErrorMessage)
+                //  Update the local database and show the list
+                saveToLocalDatabase(mergedUserWithProfileList)
+                listener.onSuccess(mergedUserWithProfileList)
+            } catch (e: Exception) {
+                listener.onFailed(e.message ?: somethingWentWrongErrorMessage)
+            }
         }
+
+    override suspend fun updateUserOnLocal(user: LocalUser, listener: Listener<Nothing>) {
+        val result = localRepository.updateUser(user)
+        if (result is Result.onSuccess) {
+            listener.onSuccess()
+            return
+        }
+        listener.onFailed(updateUserErrorMessage)
     }
 
     private suspend fun getListFromLocal(): List<UserWithProfile> {
@@ -69,7 +83,7 @@ class MainRepository(
     private suspend fun saveToLocalDatabase(userWithProfileList: List<UserWithProfile>) {
         for (userWithProfile in userWithProfileList) {
             userWithProfile.user?.let {
-                localRepository.updateUser(it)
+                localRepository.insertUser(it)
             }
             userWithProfile.profile?.let {
                 localRepository.insertProfile(it)
@@ -104,8 +118,10 @@ class MainRepository(
         return listOfUser.toList()
     }
 
-    private fun mergeLocalAndRemoteList(listFromLocal: List<UserWithProfile>,
-                                        listFromRemote: List<UserWithProfile>): List<UserWithProfile> {
+    private fun mergeLocalAndRemoteList(
+        listFromLocal: List<UserWithProfile>,
+        listFromRemote: List<UserWithProfile>
+    ): List<UserWithProfile> {
         listFromRemote.forEachIndexed { index, userWithProfileRemote ->
             //  Get the UserWithProfile from local
             val userWithProfileLocal = listFromLocal.find {

@@ -5,13 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.githubusers.data.local.entity.LocalUser
 import com.example.githubusers.data.local.entity.UserWithProfile
 import com.example.githubusers.databinding.ItemUsersBinding
 
 class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit) :
     RecyclerView.Adapter<UserListAdapter.ViewHolder>() {
 
-    private var data: List<UserWithProfile> = listOf()
+    private var data = mutableListOf<UserWithProfile>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -31,9 +32,18 @@ class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit
         return data.size
     }
 
-    fun updateData(data: List<UserWithProfile>) {
-        this.data = data
+    fun setData(data: List<UserWithProfile>) {
+        this.data.addAll(data)
         notifyDataSetChanged()
+    }
+
+    fun update(userWithProfile: UserWithProfile) {
+        val user = userWithProfile.user ?: LocalUser()
+        //  Find user from the list and update the note
+        data.find { it.user?.id == user.id }?.user?.notes = user.notes
+        //  Get the index and notify adapter by index
+        val index = data.indexOfFirst { it.user?.id == user.id }
+        notifyItemChanged(index)
     }
 
     class ViewHolder(val binding: ItemUsersBinding) :

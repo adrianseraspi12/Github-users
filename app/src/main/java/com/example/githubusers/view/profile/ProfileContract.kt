@@ -1,5 +1,7 @@
 package com.example.githubusers.view.profile
 
+import com.example.githubusers.data.local.entity.UserWithProfile
+
 interface ProfileContract {
 
     interface View {
@@ -15,6 +17,8 @@ interface ProfileContract {
                                notes: String)
 
         fun showToastMessage(message: String)
+
+        fun updateUserWithProfileFromLastScreen(userWithProfile: UserWithProfile)
     }
 
     interface Presenter {

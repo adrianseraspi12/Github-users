@@ -6,10 +6,9 @@ import com.example.githubusers.data.remote.Listener
 import kotlinx.coroutines.runBlocking
 
 class UserListPresenter(
-        private val view: UserListContract.View,
-        private val mainRepository: IMainRepository
-) :
-        UserListContract.Presenter {
+    private val view: UserListContract.View,
+    private val mainRepository: IMainRepository
+) : UserListContract.Presenter {
 
     init {
         view.setupPresenter(this)

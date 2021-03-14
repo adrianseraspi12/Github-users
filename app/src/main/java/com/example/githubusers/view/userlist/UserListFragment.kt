@@ -1,5 +1,6 @@
 package com.example.githubusers.view.userlist
 
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +12,10 @@ import com.example.githubusers.data.local.entity.UserWithProfile
 import com.example.githubusers.databinding.FragmentUserListBinding
 import com.example.githubusers.view.adapter.UserListAdapter
 import com.example.githubusers.view.profile.ProfileActivity
+import com.example.githubusers.view.profile.UPDATED_NOTE_RESULT_ARG
 import com.example.githubusers.view.profile.USER_PROFILE_ARG
+
+const val UPDATE_NOTE_REQUEST_CODE = 200
 
 class UserListFragment : Fragment(), UserListContract.View {
 
@@ -29,7 +33,7 @@ class UserListFragment : Fragment(), UserListContract.View {
         userListAdapter = UserListAdapter {
             val intent = Intent(context, ProfileActivity::class.java)
             intent.putExtra(USER_PROFILE_ARG, it)
-            startActivity(intent)
+            startActivityForResult(intent, UPDATE_NOTE_REQUEST_CODE)
         }
     }
 
@@ -48,6 +52,19 @@ class UserListFragment : Fragment(), UserListContract.View {
         setupRecyclerView()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            UPDATE_NOTE_REQUEST_CODE -> {
+                if (resultCode == RESULT_OK) {
+                    val userWithProfile =
+                        data?.getSerializableExtra(UPDATED_NOTE_RESULT_ARG) as UserWithProfile
+                    userListAdapter.update(userWithProfile)
+                }
+            }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -58,7 +75,7 @@ class UserListFragment : Fragment(), UserListContract.View {
     }
 
     override fun setUserList(list: List<UserWithProfile>) {
-        userListAdapter.updateData(list)
+        userListAdapter.setData(list)
     }
 
     override fun showLoading() {

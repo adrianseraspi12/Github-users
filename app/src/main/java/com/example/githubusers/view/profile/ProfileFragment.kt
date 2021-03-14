@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.example.githubusers.data.local.entity.UserWithProfile
 import com.example.githubusers.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment(), ProfileContract.View {
@@ -32,6 +33,7 @@ class ProfileFragment : Fragment(), ProfileContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.setup()
+        binding.profileBtnSave.setOnClickListener(saveNoteClickListener)
     }
 
     override fun onDestroyView() {
@@ -66,5 +68,15 @@ class ProfileFragment : Fragment(), ProfileContract.View {
 
     override fun showToastMessage(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun updateUserWithProfileFromLastScreen(userWithProfile: UserWithProfile) {
+        val activity = activity as ProfileActivity
+        activity.passResultFromFragmentToPreviousFragment(userWithProfile)
+    }
+
+    private val saveNoteClickListener = View.OnClickListener {
+        val noteString = binding.profileEtNote.text.toString()
+        presenter.saveNote(noteString)
     }
 }
