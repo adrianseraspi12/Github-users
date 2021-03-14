@@ -122,14 +122,15 @@ class MainRepository(
         listFromLocal: List<UserWithProfile>,
         listFromRemote: List<UserWithProfile>
     ): List<UserWithProfile> {
-        listFromRemote.forEachIndexed { index, userWithProfileRemote ->
+        val mutableListFromRemote = listFromRemote.toMutableList()
+        mutableListFromRemote.forEachIndexed { index, userWithProfileRemote ->
             //  Get the UserWithProfile from local
             val userWithProfileLocal = listFromLocal.find {
                 it.user?.id == userWithProfileRemote.user?.id
             }
 
             //  Set the notes of remote object
-            listFromRemote[index].user?.notes = userWithProfileLocal?.user?.notes
+            mutableListFromRemote[index].user?.notes = userWithProfileLocal?.user?.notes
         }
         return listFromRemote
     }
