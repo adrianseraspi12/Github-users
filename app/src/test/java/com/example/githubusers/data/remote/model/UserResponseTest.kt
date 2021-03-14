@@ -15,8 +15,10 @@ class UserResponseTest {
     @Test
     fun test_When_UserResponseValuesIsComplete_UserResponseValues_Should_NotBeNull() {
         val userResponse = UserResponse(
-                "John Doe",
-                "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe-21/@@images/image/large")
+            0,
+            "John Doe",
+            "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe-21/@@images/image/large"
+        )
         Assert.assertNotNull(userResponse.name)
         Assert.assertNotNull(userResponse.image)
     }

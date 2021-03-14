@@ -31,32 +31,32 @@ class UserRepositoryTest {
 
     @Test
     fun test_When_GetAllUsersIsNotEmpty_ListOfUsers_Should_BeEqualToListFromDao() =
-            runBlockingTest {
-                val listOfUsers = listOf(
-                        LocalUser(
-                                0, "john",
-                                "https://www.jd.com/png",
-                                "John Doe",
-                        ),
-                        LocalUser(
-                                1, "jane",
-                                "https://www.jnd.com/png",
-                                "Jane Doe",
-                        ),
-                        LocalUser(
-                                2, "uncle",
-                                "https://www.ub.com/png",
-                                "Uncle Bob"
-                        )
+        runBlockingTest {
+            val listOfUsers = listOf(
+                LocalUser(
+                    0, "john",
+                    "https://www.jd.com/png",
+                    "John Doe",
+                ),
+                LocalUser(
+                    1, "jane",
+                    "https://www.jnd.com/png",
+                    "Jane Doe",
+                ),
+                LocalUser(
+                    2, "uncle",
+                    "https://www.ub.com/png",
+                    "Uncle Bob"
                 )
+            )
 
-                `when`(userDao.getAllUsers()).thenReturn(listOfUsers)
-                val result = userRepository.getAllUsers()
+            `when`(userDao.getAllUsers()).thenReturn(listOfUsers)
+            val result = userRepository.getAllUsers()
 
-                Assert.assertTrue(result is Result.onSuccess)
-                Assert.assertNotNull((result as Result.onSuccess).data)
-                Assert.assertEquals(result.data!!, listOfUsers)
-            }
+            Assert.assertTrue(result is Result.onSuccess)
+            Assert.assertNotNull((result as Result.onSuccess).data)
+            Assert.assertEquals(result.data!!, listOfUsers)
+        }
 
     @Test
     fun test_When_GetAllUsersEmpty_ListOfUsers_Should_ReturnEmpty() = runBlockingTest {
@@ -74,15 +74,18 @@ class UserRepositoryTest {
         val result = userRepository.getAllUserWithProfile()
 
         Assert.assertTrue(result is Result.onFailed)
-        Assert.assertEquals((result as Result.onFailed).errorMessage, getAllUserWithProfileErrorMessage)
+        Assert.assertEquals(
+            (result as Result.onFailed).errorMessage,
+            getAllUserWithProfileErrorMessage
+        )
     }
 
     @Test
     fun test_When_GetUserIsSuccess_Should_ReturnCorrectUserProfile() = runBlockingTest {
         val localUser = LocalUser(
-                0, "john",
-                "https://www.jd.com/png",
-                "John Doe",
+            0, "john",
+            "https://www.jd.com/png",
+            "John Doe",
         )
         `when`(userDao.findUserById(0)).thenReturn(localUser)
 
@@ -120,15 +123,15 @@ class UserRepositoryTest {
 
     @Test
     fun test_When_SaveAllIsSuccessful_Should_CallOnSuccess() = runBlockingTest {
-        val result = userRepository.saveAll(listOf(LocalUser()))
+        val result = userRepository.insertUser(LocalUser())
         Assert.assertTrue(result is Result.onSuccess)
     }
 
     @Test
     fun test_When_SaveAllIsFail_Should_ReturnErrorMessage() = runBlockingTest {
-        `when`(userDao.insertAll(listOf(LocalUser()))).thenThrow(IllegalStateException())
+        `when`(userDao.insert(LocalUser())).thenThrow(IllegalStateException())
 
-        val result = userRepository.saveAll(listOf(LocalUser()))
+        val result = userRepository.insertUser(LocalUser())
 
         Assert.assertTrue(result is Result.onFailed)
         Assert.assertEquals((result as Result.onFailed).errorMessage, saveAllErrorMessage)
@@ -152,18 +155,18 @@ class UserRepositoryTest {
     @Test
     fun test_When_GetAllUserWithProfileIsSuccessful_Should_CallOnSuccess() = runBlockingTest {
         val user = LocalUser(
-                0, "john",
-                "https://www.jd.com/png",
-                "",
+            0, "john",
+            "https://www.jd.com/png",
+            "",
         )
         val profile = LocalProfile(
-                0, 0,
-                "John Doe",
-                "",
-                12,
-                23,
-                "Apple",
-                ""
+            0, 0,
+            "John Doe",
+            "",
+            12,
+            23,
+            "Apple",
+            ""
         )
         val listOfUserWithProfile = listOf(UserWithProfile(user, profile))
         `when`(userDao.getAllUserWithProfile()).thenReturn(listOfUserWithProfile)
@@ -184,7 +187,10 @@ class UserRepositoryTest {
         val result = userRepository.getAllUserWithProfile()
 
         Assert.assertTrue(result is Result.onFailed)
-        Assert.assertEquals((result as Result.onFailed).errorMessage, getAllUserWithProfileErrorMessage)
+        Assert.assertEquals(
+            (result as Result.onFailed).errorMessage,
+            getAllUserWithProfileErrorMessage
+        )
     }
 
     @Test

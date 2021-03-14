@@ -19,7 +19,7 @@ interface UsersDao {
     fun updateUser(user: LocalUser)
 
     @Insert
-    fun insertAll(listOfUSer: List<LocalUser>)
+    fun insert(listOfUSer: LocalUser)
 
     @Query("DELETE FROM users")
     fun deleteAll()

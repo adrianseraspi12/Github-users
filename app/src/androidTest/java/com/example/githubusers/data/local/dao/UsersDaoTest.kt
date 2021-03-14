@@ -27,33 +27,35 @@ class UsersDaoTest {
         //  the data stored here will erase after
         //  testing
         usersDatabase = Room.inMemoryDatabaseBuilder(
-                getApplicationContext(),
-                UsersDatabase::class.java
+            getApplicationContext(),
+            UsersDatabase::class.java
         ).build()
     }
 
     @Test
-    fun insertListOfUsersAndGetAllUsers() {
+    fun insertUsersAndGetAllUsers() {
         val listOfUsers = listOf(
-                LocalUser(
-                        0,
-                        "john",
-                        "https://www.jd.com/png",
-                        "",
-                ),
-                LocalUser(
-                        1, "jane",
-                        "https://www.jnd.com/png",
-                        "Visit my blog",
-                ),
-                LocalUser(
-                        2, "uncle",
-                        "https://www.ub.com/png",
-                        "notes to uncle",
-                )
+            LocalUser(
+                0,
+                "john",
+                "https://www.jd.com/png",
+                "",
+            ),
+            LocalUser(
+                1, "jane",
+                "https://www.jnd.com/png",
+                "Visit my blog",
+            ),
+            LocalUser(
+                2, "uncle",
+                "https://www.ub.com/png",
+                "notes to uncle",
+            )
         )
 
-        usersDatabase.usersDao().insertAll(listOfUsers)
+        usersDatabase.usersDao().insert(listOfUsers[0])
+        usersDatabase.usersDao().insert(listOfUsers[1])
+        usersDatabase.usersDao().insert(listOfUsers[2])
 
         val listOfUserFromDb = usersDatabase.usersDao().getAllUsers()
 
@@ -65,12 +67,12 @@ class UsersDaoTest {
     @Test
     fun insertUserAndGetUserById() {
         val user = LocalUser(
-                0,
-                "john",
-                "https://www.jd.com/png",
-                "",
+            0,
+            "john",
+            "https://www.jd.com/png",
+            "",
         )
-        usersDatabase.usersDao().insertAll(listOf(user))
+        usersDatabase.usersDao().insert(user)
 
         val userFromDb = usersDatabase.usersDao().findUserById(0)
 
@@ -85,19 +87,19 @@ class UsersDaoTest {
     fun updateUserAndGetById() {
         //  Insert a user
         val user = LocalUser(
-                0,
-                "john",
-                "https://www.jd.com/png",
-                "",
+            0,
+            "john",
+            "https://www.jd.com/png",
+            "",
         )
-        usersDatabase.usersDao().insertAll(listOf(user))
+        usersDatabase.usersDao().insert(user)
 
         //  Update user
         val updatedUser = LocalUser(
-                0,
-                "john",
-                "https://www.jd.com/png",
-                "",
+            0,
+            "john",
+            "https://www.jd.com/png",
+            "",
         )
         usersDatabase.usersDao().updateUser(updatedUser)
 
@@ -114,12 +116,12 @@ class UsersDaoTest {
     fun insertUserThenDeleteAllUserAndGetAllUser() {
         //  Insert a user
         val user = LocalUser(
-                0,
-                "john",
-                "https://www.jd.com/png",
-                "",
+            0,
+            "john",
+            "https://www.jd.com/png",
+            "",
         )
-        usersDatabase.usersDao().insertAll(listOf(user))
+        usersDatabase.usersDao().insert(user)
 
         //  Execute delete all user
         usersDatabase.usersDao().deleteAll()
@@ -134,23 +136,23 @@ class UsersDaoTest {
     fun insertUserWithProfileThenGetAllUserWithProfile() {
         //  Insert a user
         val user = LocalUser(
-                0,
-                "john",
-                "https://www.jd.com/png",
-                "",
+            0,
+            "john",
+            "https://www.jd.com/png",
+            "",
         )
-        usersDatabase.usersDao().insertAll(listOf(user))
+        usersDatabase.usersDao().insert(user)
 
         //  Insert profile
         val profile = LocalProfile(
-                0,
-                user.id!!,
-                "John doe",
-                "",
-                23,
-                12,
-                "Apple",
-                "www.apple.com"
+            0,
+            user.id!!,
+            "John doe",
+            "",
+            23,
+            12,
+            "Apple",
+            "www.apple.com"
         )
         usersDatabase.profileDao().insertProfile(profile)
 
@@ -165,12 +167,12 @@ class UsersDaoTest {
     fun insertUserWithNoProfileThenGetAllUserWithNoProfile() {
         //  Insert a user
         val user = LocalUser(
-                0,
-                "john",
-                "https://www.jd.com/png",
-                "",
+            0,
+            "john",
+            "https://www.jd.com/png",
+            "",
         )
-        usersDatabase.usersDao().insertAll(listOf(user))
+        usersDatabase.usersDao().insert(user)
 
         //  Execute get user with profile and check
         val listOfUserWithProfile = usersDatabase.usersDao().getAllUserWithProfile()
