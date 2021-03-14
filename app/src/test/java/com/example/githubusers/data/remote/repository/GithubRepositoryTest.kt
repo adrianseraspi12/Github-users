@@ -31,14 +31,16 @@ class GithubRepositoryTest {
     @Test
     fun test_When_RequestUserListIsSuccess_Should_ReturnListOfUser() = runBlockingTest {
         val listOfUserResponse = listOf(
-                UserResponse(
-                        "John Doe",
-                        "https://www.jnd.com/png"
-                ),
-                UserResponse(
-                        "Jane Doe",
-                        "https://www.jd.com/png"
-                )
+            UserResponse(
+                0,
+                "John Doe",
+                "https://www.jnd.com/png"
+            ),
+            UserResponse(
+                0,
+                "Jane Doe",
+                "https://www.jd.com/png"
+            )
         )
 
         //  Create a mock call for github client and
@@ -57,34 +59,34 @@ class GithubRepositoryTest {
 
     @Test
     fun test_When_RequestUserListFail_Should_ReturnErrorMessage() =
-            runBlockingTest {
-                //  Create a mock call for github client and
-                //  Setup mock api response
-                val mockCall: Call<List<UserResponse>> = mock()
-                `when`(client.getUserList(0)).thenReturn(mockCall)
-                doThrow(RuntimeException()).`when`(mockCall).execute()
+        runBlockingTest {
+            //  Create a mock call for github client and
+            //  Setup mock api response
+            val mockCall: Call<List<UserResponse>> = mock()
+            `when`(client.getUserList(0)).thenReturn(mockCall)
+            doThrow(RuntimeException()).`when`(mockCall).execute()
 
-                //  Call requestUserProfile
-                val result = githubRepository.requestUserList(0)
+            //  Call requestUserProfile
+            val result = githubRepository.requestUserList(0)
 
-                //  Check the listener
-                Assert.assertTrue(result is Result.onFailed)
-                Assert.assertEquals(
-                        (result as Result.onFailed).errorMessage,
-                        somethingWentWrongErrorMessage
-                )
-            }
+            //  Check the listener
+            Assert.assertTrue(result is Result.onFailed)
+            Assert.assertEquals(
+                (result as Result.onFailed).errorMessage,
+                somethingWentWrongErrorMessage
+            )
+        }
 
     @Test
     fun test_When_RequestUserProfileIsSuccess_Should_ReturnUserProfile() = runBlockingTest {
         val profileResponse = ProfileResponse(
-                "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe-21/@@images/image/large",
-                "John Doe",
-                "",
-                58,
-                34,
-                "Apple",
-                "www.apple.com"
+            "https://www.fbi.gov/wanted/vicap/unidentified-persons/john-doe-21/@@images/image/large",
+            "John Doe",
+            "",
+            58,
+            34,
+            "Apple",
+            "www.apple.com"
         )
 
         //  Create a mock call for github client and
@@ -103,22 +105,22 @@ class GithubRepositoryTest {
 
     @Test
     fun test_When_RequestUserProfileFail_Should_ReturnErrorMessage() =
-            runBlockingTest {
-                //  Create a mock call for github client and
-                //  Setup mock api response
-                val mockCall: Call<ProfileResponse> = mock()
-                `when`(client.getProfile("johndoe")).thenReturn(mockCall)
-                doThrow(RuntimeException()).`when`(mockCall).execute()
+        runBlockingTest {
+            //  Create a mock call for github client and
+            //  Setup mock api response
+            val mockCall: Call<ProfileResponse> = mock()
+            `when`(client.getProfile("johndoe")).thenReturn(mockCall)
+            doThrow(RuntimeException()).`when`(mockCall).execute()
 
-                //  Call requestUserProfile
-                val result = githubRepository.requestUserProfile("johndoe")
+            //  Call requestUserProfile
+            val result = githubRepository.requestUserProfile("johndoe")
 
-                Assert.assertTrue(result is Result.onFailed)
-                Assert.assertEquals(
-                        (result as Result.onFailed).errorMessage,
-                        somethingWentWrongErrorMessage
-                )
-            }
+            Assert.assertTrue(result is Result.onFailed)
+            Assert.assertEquals(
+                (result as Result.onFailed).errorMessage,
+                somethingWentWrongErrorMessage
+            )
+        }
 
     private inline fun <reified T : Any> mock(): T = mock(T::class.java)!!
 }
