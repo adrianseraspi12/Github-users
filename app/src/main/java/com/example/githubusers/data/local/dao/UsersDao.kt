@@ -2,6 +2,7 @@ package com.example.githubusers.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.example.githubusers.data.local.entity.LocalUser
@@ -18,7 +19,7 @@ interface UsersDao {
     @Update
     fun updateUser(user: LocalUser)
 
-    @Insert
+    @Insert(onConflict = REPLACE)
     fun insert(listOfUSer: LocalUser)
 
     @Query("DELETE FROM users")
