@@ -6,7 +6,7 @@ import com.example.githubusers.data.remote.model.UserResponse
 
 interface IGithubRepository {
 
-    suspend fun requestUserList(page: Int): Result<List<UserResponse>>
+    suspend fun requestUserList(since: Int): Result<List<UserResponse>>
     suspend fun requestUserProfile(username: String): Result<ProfileResponse>
 
 }
