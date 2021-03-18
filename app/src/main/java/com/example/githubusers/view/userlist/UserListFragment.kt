@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,8 +41,8 @@ class UserListFragment : Fragment(), UserListContract.View {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentUserListBinding.inflate(inflater, container, false)
@@ -52,6 +53,7 @@ class UserListFragment : Fragment(), UserListContract.View {
         super.onViewCreated(view, savedInstanceState)
         presenter.setup()
         setupRecyclerView()
+        setupSearch()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -60,7 +62,7 @@ class UserListFragment : Fragment(), UserListContract.View {
             UPDATE_NOTE_REQUEST_CODE -> {
                 if (resultCode == RESULT_OK) {
                     val userWithProfile =
-                        data?.getSerializableExtra(UPDATED_NOTE_RESULT_ARG) as UserWithProfile
+                            data?.getSerializableExtra(UPDATED_NOTE_RESULT_ARG) as UserWithProfile
                     userListAdapter.update(userWithProfile)
                 }
             }
@@ -72,6 +74,30 @@ class UserListFragment : Fragment(), UserListContract.View {
         _binding = null
     }
 
+    private var recyclerViewOnScrollListener = object : RecyclerView.OnScrollListener() {
+
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            val visibleItemCount = linearLayoutManager.childCount
+            val totalItemCount = linearLayoutManager.itemCount
+            val pastVisibleItems = linearLayoutManager.findFirstVisibleItemPosition()
+            presenter.onScroll(visibleItemCount, totalItemCount, pastVisibleItems)
+        }
+
+    }
+
+    private var focusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
+        val searchView = view as SearchView
+        if (hasFocus) {
+            //  This prevents calling for api
+            binding.userListRecylerview.clearOnScrollListeners()
+        } else {
+            if (searchView.query.isEmpty()) {
+                binding.userListRecylerview.addOnScrollListener(recyclerViewOnScrollListener)
+            }
+        }
+    }
+
     private fun initAdapter() {
         userListAdapter = UserListAdapter {
             val intent = Intent(context, ProfileActivity::class.java)
@@ -80,23 +106,28 @@ class UserListFragment : Fragment(), UserListContract.View {
         }
     }
 
-    var isLoading = false
-
     private fun setupRecyclerView() {
         binding.userListRecylerview.apply {
             layoutManager = linearLayoutManager
             adapter = userListAdapter
+            addOnScrollListener(recyclerViewOnScrollListener)
         }
-        binding.userListRecylerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val visibleItemCount = linearLayoutManager.childCount
-                val totalItemCount = linearLayoutManager.itemCount
-                val pastVisibleItems = linearLayoutManager.findFirstVisibleItemPosition()
-                presenter.onScroll(visibleItemCount, totalItemCount, pastVisibleItems)
+    }
+
+    private fun setupSearch() {
+        binding.userListSearchView.setOnQueryTextFocusChangeListener(focusChangeListener)
+        binding.userListSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                userListAdapter.filter.filter(newText)
+                return false
             }
         })
-
+        binding.userListSearchView.clearFocus()
+        binding.userListSearchView.isFocusable = false
     }
 
     override fun setupPresenter(presenter: UserListContract.Presenter) {
@@ -106,11 +137,10 @@ class UserListFragment : Fragment(), UserListContract.View {
     override fun setUserList(list: List<UserWithProfile>) {
         //  Move progressbar at the bottom
         val params: ConstraintLayout.LayoutParams =
-            binding.userListProgressbar.layoutParams as ConstraintLayout.LayoutParams
+                binding.userListProgressbar.layoutParams as ConstraintLayout.LayoutParams
         params.verticalBias = 1f
         binding.userListProgressbar.layoutParams = params
         userListAdapter.setData(list)
-
     }
 
     override fun showLoading() {
@@ -122,7 +152,6 @@ class UserListFragment : Fragment(), UserListContract.View {
     }
 
     override fun addNewList(list: List<UserWithProfile>) {
-        isLoading = false
         userListAdapter.addData(list)
     }
 
