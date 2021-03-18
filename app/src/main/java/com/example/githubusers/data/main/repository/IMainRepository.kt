@@ -10,4 +10,6 @@ interface IMainRepository {
 
     suspend fun updateUserOnLocal(user: LocalUser, listener: Listener<Nothing>)
 
+    suspend fun loadUserList(since: Int, listener: Listener<List<UserWithProfile>>)
+
 }

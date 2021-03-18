@@ -15,9 +15,9 @@ class GithubRepository(
         private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IGithubRepository {
 
-    override suspend fun requestUserList(page: Int): Result<List<UserResponse>> = withContext(ioDispatcher) {
+    override suspend fun requestUserList(since: Int): Result<List<UserResponse>> = withContext(ioDispatcher) {
         try {
-            val response = getRequestUserListResponse(page)
+            val response = getRequestUserListResponse(since)
             if (response.code() == 200) {
                 return@withContext Result.onSuccess(response.body())
             }

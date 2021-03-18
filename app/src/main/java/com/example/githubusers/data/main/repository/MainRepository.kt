@@ -27,11 +27,34 @@ class MainRepository(
                 if (listFromLocal.isNotEmpty()) {
                     listener.onSuccess(listFromLocal)
                 }
-                //  Call fail if list from local and remote is
-                //  not available
-                val listFromRemote = getListFromRemote()
+
+                //  Call fail if list from local and remote is not available
+                val listFromRemote = getListFromRemote(0)
                 if (listFromLocal.isEmpty() && listFromRemote.isEmpty()) {
-                    listener.onFailed(requestUserListErrorMessage)
+                    launch(Dispatchers.Main) { listener.onFailed(requestUserListErrorMessage) }
+                    return@withContext
+                } else if (listFromRemote.isEmpty()) {
+                    launch(Dispatchers.Main) { listener.onSuccess(listFromLocal) }
+                    return@withContext
+                }
+
+                //  Request for another list on remote
+                //  until they have the same data
+                loop@ while (listFromLocal.size > listFromRemote.size) {
+                    val lastItemId = listFromRemote.last().id ?: break@loop
+                    val newListFromRemote = getListFromRemote(lastItemId)
+
+                    if (newListFromRemote.isEmpty()) {
+                        break@loop
+                    }
+                    listFromRemote.addAll(newListFromRemote)
+                }
+
+                //  If the local and remote does not have the same data
+                //  return the local list to retain the data from
+                //  the local
+                if (listFromLocal.size > listFromRemote.size) {
+                    launch(Dispatchers.Main) { listener.onSuccess(listFromLocal) }
                     return@withContext
                 }
 
@@ -45,9 +68,38 @@ class MainRepository(
 
                 //  Update the local database and show the list
                 saveToLocalDatabase(mergedUserWithProfileList)
-                listener.onSuccess(mergedUserWithProfileList)
+                launch(Dispatchers.Main) { listener.onSuccess(mergedUserWithProfileList) }
             } catch (e: Exception) {
-                listener.onFailed(e.message ?: somethingWentWrongErrorMessage)
+                launch(Dispatchers.Main) {
+                    listener.onFailed(
+                        e.message ?: somethingWentWrongErrorMessage
+                    )
+                }
+            }
+        }
+
+    override suspend fun loadUserList(since: Int, listener: Listener<List<UserWithProfile>>) =
+        withContext(ioDispatcher) {
+            try {
+                //  Call fail if list from remote is not empty
+                val listFromRemote = getListFromRemote(since)
+                if (listFromRemote.isEmpty()) {
+                    launch(Dispatchers.Main) { listener.onFailed(requestUserListErrorMessage) }
+                    return@withContext
+                }
+
+                //  Convert the list from UserResponse to UserWithProfile
+                val listOfUserWithProfile = convertToUserWithProfile(listFromRemote)
+
+                //  Update the local database and show the list
+                saveToLocalDatabase(listOfUserWithProfile)
+                launch(Dispatchers.Main) { listener.onSuccess(listOfUserWithProfile) }
+            } catch (e: Exception) {
+                launch(Dispatchers.Main) {
+                    listener.onFailed(
+                        e.message ?: somethingWentWrongErrorMessage
+                    )
+                }
             }
         }
 
@@ -72,11 +124,11 @@ class MainRepository(
         return listOfUser
     }
 
-    private suspend fun getListFromRemote(): List<UserResponse> {
-        val resultFromRemote = remoteRepository.requestUserList(0)
-        var listOfUser = listOf<UserResponse>()
+    private suspend fun getListFromRemote(since: Int): MutableList<UserResponse> {
+        val resultFromRemote = remoteRepository.requestUserList(since)
+        var listOfUser = mutableListOf<UserResponse>()
         if (resultFromRemote is Result.onSuccess) {
-            listOfUser = resultFromRemote.data ?: listOf()
+            listOfUser = resultFromRemote.data?.toMutableList() ?: mutableListOf()
         }
         return listOfUser
     }
@@ -133,7 +185,7 @@ class MainRepository(
             //  Set the notes of remote object
             mutableListFromRemote[index].user?.notes = userWithProfileLocal?.user?.notes ?: ""
         }
-        return listFromRemote
+        return mutableListFromRemote
     }
 
 }
