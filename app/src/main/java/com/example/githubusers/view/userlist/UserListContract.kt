@@ -14,11 +14,17 @@ interface UserListContract {
 
         fun stopLoading()
 
+        fun addNewList(list: List<UserWithProfile>)
+
+        fun showToastMessage(message: String)
+
     }
 
     interface Presenter {
 
         fun setup()
+
+        fun onScroll(visibleItemCount: Int, totalItemCount: Int, pastVisibleItems: Int)
 
     }
 

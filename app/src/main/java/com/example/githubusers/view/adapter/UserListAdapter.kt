@@ -33,7 +33,12 @@ class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit
     }
 
     fun setData(data: List<UserWithProfile>) {
-        this.data.addAll(data)
+        this.data = data.toMutableList()
+        notifyDataSetChanged()
+    }
+
+    fun addData(newData: List<UserWithProfile>) {
+        this.data.addAll(newData)
         notifyDataSetChanged()
     }
 
@@ -46,8 +51,7 @@ class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit
         notifyItemChanged(index)
     }
 
-    class ViewHolder(val binding: ItemUsersBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(val binding: ItemUsersBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(userWithProfile: UserWithProfile) {
             binding.usersTvUsername.text = userWithProfile.user?.username
@@ -63,8 +67,8 @@ class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit
             Glide.with(binding.root)
                 .load(userWithProfile.user?.image)
                 .centerCrop()
+                .dontAnimate()
                 .into(binding.usersIvProfile)
         }
-
     }
 }

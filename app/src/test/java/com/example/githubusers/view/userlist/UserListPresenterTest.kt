@@ -7,21 +7,43 @@ import com.example.githubusers.data.main.repository.IMainRepository
 import com.example.githubusers.data.remote.Listener
 import com.example.githubusers.util.constants.requestUserListErrorMessage
 import com.example.githubusers.view.BasePresenterTest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.*
 
 @ExperimentalCoroutinesApi
-class UserListPresenterTest: BasePresenterTest() {
+class UserListPresenterTest : BasePresenterTest() {
 
     private lateinit var view: UserListContract.View
     private lateinit var mainRepository: IMainRepository
     private lateinit var presenter: UserListPresenter
     private lateinit var mainRepositoryListener: ArgumentCaptor<Listener<List<UserWithProfile>>>
+
+    private val user = LocalUser(
+            0, "john",
+            "https://www.jd.com/png",
+            "",
+    )
+    private val profile = LocalProfile(
+            0, 0,
+            "John Doe",
+            "",
+            12,
+            23,
+            "Apple",
+            ""
+    )
+    private val listUserWithProfile = listOf(UserWithProfile(user, profile))
 
     @Before
     fun setup() {
@@ -29,6 +51,7 @@ class UserListPresenterTest: BasePresenterTest() {
         view = mock(UserListContract.View::class.java)
         mainRepository = mock(IMainRepository::class.java)
         presenter = UserListPresenter(view, mainRepository)
+        Dispatchers.setMain(TestCoroutineDispatcher())
     }
 
     @Test
@@ -38,23 +61,6 @@ class UserListPresenterTest: BasePresenterTest() {
 
     @Test
     fun test_When_DataFromRepositoryHasValues_Should_CallViewSetUserList() = runBlockingTest {
-        val user = LocalUser(
-                0, "john",
-                "https://www.jd.com/png",
-                "",
-        )
-        val profile = LocalProfile(
-                0, 0,
-                "John Doe",
-                "",
-                12,
-                23,
-                "Apple",
-                ""
-        )
-
-        val listUserWithProfile = listOf(UserWithProfile(user, profile))
-
         presenter.setup()
 
         verify(view).showLoading()
@@ -79,6 +85,96 @@ class UserListPresenterTest: BasePresenterTest() {
 
         mainRepositoryListener.value.onFailed(requestUserListErrorMessage)
         verify(view).stopLoading()
+    }
+
+    @Test
+    fun test_When_LoadMoreIsSuccessful_Should_ShowNewList() = runBlockingTest {
+        val newUser = LocalUser(
+                2, "jane",
+                "https://www.jane.com/png",
+                "",
+        )
+        val newProfile = LocalProfile(
+                2, 2,
+                "Jane Doe",
+                "Hello I'm Jane",
+                10,
+                50,
+                "Orange",
+                ""
+        )
+        val newListUserWithProfile = listOf(UserWithProfile(newUser, newProfile))
+
+        //  Call setup
+        presenter.setup()
+        verify(mainRepository).loadUserList(capture(mainRepositoryListener))
+
+        //  Set a value on listener
+        mainRepositoryListener.value.onSuccess(listUserWithProfile)
+        val showListOfUserWithProfile = argumentCaptor<List<UserWithProfile>>()
+
+        verify(view).setUserList(capture(showListOfUserWithProfile))
+
+        presenter.onScroll(10, 20, 10)
+
+        val showNewListOfUserWithProfile: ArgumentCaptor<Listener<List<UserWithProfile>>> = argumentCaptor()
+        verify(mainRepository).loadUserList(eq(listUserWithProfile[0].user?.id!!), capture(showNewListOfUserWithProfile))
+        showNewListOfUserWithProfile.value.onSuccess(newListUserWithProfile)
+
+        verify(view, times(2)).showLoading()
+        verify(view, times(2)).stopLoading()
+        verify(view).addNewList(newListUserWithProfile)
+    }
+
+    @Test
+    fun test_When_LoadMoreIsFail_Should_ShowErrorMessage() = runBlockingTest {
+        //  Call setup
+        presenter.setup()
+        verify(mainRepository).loadUserList(capture(mainRepositoryListener))
+
+        //  Set a value on listener
+        mainRepositoryListener.value.onSuccess(listUserWithProfile)
+        val showListOfUserWithProfile = argumentCaptor<List<UserWithProfile>>()
+
+        verify(view).setUserList(capture(showListOfUserWithProfile))
+
+        presenter.onScroll(10, 20, 10)
+
+        val showNewListOfUserWithProfile: ArgumentCaptor<Listener<List<UserWithProfile>>> = argumentCaptor()
+        verify(mainRepository).loadUserList(eq(listUserWithProfile[0].user?.id!!), capture(showNewListOfUserWithProfile))
+        showNewListOfUserWithProfile.value.onFailed(requestUserListErrorMessage)
+
+        verify(view, times(2)).showLoading()
+        verify(view, times(2)).stopLoading()
+        verify(view).showToastMessage(requestUserListErrorMessage)
+    }
+
+    @Test
+    fun test_When_LoadMoreIsSuccessfulWithEmptyValue_Should_ShowErrorMessage() = runBlockingTest {
+        //  Call setup
+        presenter.setup()
+        verify(mainRepository).loadUserList(capture(mainRepositoryListener))
+
+        //  Set a value on listener
+        mainRepositoryListener.value.onSuccess(listUserWithProfile)
+        val showListOfUserWithProfile = argumentCaptor<List<UserWithProfile>>()
+
+        verify(view).setUserList(capture(showListOfUserWithProfile))
+
+        presenter.onScroll(10, 20, 10)
+
+        val showNewListOfUserWithProfile: ArgumentCaptor<Listener<List<UserWithProfile>>> = argumentCaptor()
+        verify(mainRepository).loadUserList(eq(listUserWithProfile[0].user?.id!!), capture(showNewListOfUserWithProfile))
+        showNewListOfUserWithProfile.value.onSuccess(null)
+
+        verify(view, times(2)).showLoading()
+        verify(view, times(2)).stopLoading()
+        verify(view).showToastMessage(requestUserListErrorMessage)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
 }
