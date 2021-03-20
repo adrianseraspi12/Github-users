@@ -22,7 +22,7 @@ interface UserListContract {
 
     interface Presenter {
 
-        fun setup()
+        fun requestUserList()
 
         fun onScroll(visibleItemCount: Int, totalItemCount: Int, pastVisibleItems: Int)
 

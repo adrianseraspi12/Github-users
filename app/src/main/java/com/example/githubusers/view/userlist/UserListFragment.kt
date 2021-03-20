@@ -1,7 +1,12 @@
 package com.example.githubusers.view.userlist
 
+import android.app.Activity.CONNECTIVITY_SERVICE
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +23,6 @@ import com.example.githubusers.view.adapter.UserListAdapter
 import com.example.githubusers.view.profile.ProfileActivity
 import com.example.githubusers.view.profile.UPDATED_NOTE_RESULT_ARG
 import com.example.githubusers.view.profile.USER_PROFILE_ARG
-
 
 const val UPDATE_NOTE_REQUEST_CODE = 200
 
@@ -51,9 +55,10 @@ class UserListFragment : Fragment(), UserListContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter.setup()
+        presenter.requestUserList()
         setupRecyclerView()
         setupSearch()
+        setupNetworkConnection()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -98,6 +103,15 @@ class UserListFragment : Fragment(), UserListContract.View {
         }
     }
 
+    private var networkCallback = object : ConnectivityManager.NetworkCallback() {
+
+        override fun onAvailable(network: Network) {
+            super.onAvailable(network)
+            presenter.requestUserList()
+        }
+
+    }
+
     private fun initAdapter() {
         userListAdapter = UserListAdapter {
             val intent = Intent(context, ProfileActivity::class.java)
@@ -128,6 +142,18 @@ class UserListFragment : Fragment(), UserListContract.View {
         })
         binding.userListSearchView.clearFocus()
         binding.userListSearchView.isFocusable = false
+    }
+
+    private fun setupNetworkConnection() {
+        val connectivityManager = context?.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            connectivityManager.registerDefaultNetworkCallback(networkCallback)
+        } else {
+            val request = NetworkRequest.Builder()
+                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    .build()
+            connectivityManager.registerNetworkCallback(request, networkCallback)
+        }
     }
 
     override fun setupPresenter(presenter: UserListContract.Presenter) {

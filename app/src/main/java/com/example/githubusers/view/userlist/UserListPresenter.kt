@@ -12,6 +12,7 @@ class UserListPresenter(
         private val mainRepository: IMainRepository
 ) : UserListContract.Presenter {
 
+    private var userListHasLoaded = false
     private var isLoading: Boolean = false
     private val scope = MainScope()
     private var listOfUser = mutableListOf<UserWithProfile>()
@@ -20,13 +21,16 @@ class UserListPresenter(
         view.setupPresenter(this)
     }
 
-    override fun setup() {
+    override fun requestUserList() {
+        if (userListHasLoaded) return
+
         scope.launch {
             view.showLoading()
             mainRepository.loadUserList(object : Listener<List<UserWithProfile>> {
                 override fun onSuccess(data: List<UserWithProfile>?) {
                     view.stopLoading()
                     if (data != null) {
+                        userListHasLoaded = true
                         listOfUser.addAll(data)
                         view.setUserList(data)
                     } else {

@@ -61,7 +61,7 @@ class UserListPresenterTest : BasePresenterTest() {
 
     @Test
     fun test_When_DataFromRepositoryHasValues_Should_CallViewSetUserList() = runBlockingTest {
-        presenter.setup()
+        presenter.requestUserList()
 
         verify(view).showLoading()
         verify(mainRepository).loadUserList(capture(mainRepositoryListener))
@@ -78,7 +78,7 @@ class UserListPresenterTest : BasePresenterTest() {
 
     @Test
     fun test_When_DataFromRepositoryIsFail_Should_CallViewFail() = runBlockingTest {
-        presenter.setup()
+        presenter.requestUserList()
 
         verify(view).showLoading()
         verify(mainRepository).loadUserList(capture(mainRepositoryListener))
@@ -106,7 +106,7 @@ class UserListPresenterTest : BasePresenterTest() {
         val newListUserWithProfile = listOf(UserWithProfile(newUser, newProfile))
 
         //  Call setup
-        presenter.setup()
+        presenter.requestUserList()
         verify(mainRepository).loadUserList(capture(mainRepositoryListener))
 
         //  Set a value on listener
@@ -129,7 +129,7 @@ class UserListPresenterTest : BasePresenterTest() {
     @Test
     fun test_When_LoadMoreIsFail_Should_ShowErrorMessage() = runBlockingTest {
         //  Call setup
-        presenter.setup()
+        presenter.requestUserList()
         verify(mainRepository).loadUserList(capture(mainRepositoryListener))
 
         //  Set a value on listener
@@ -152,7 +152,7 @@ class UserListPresenterTest : BasePresenterTest() {
     @Test
     fun test_When_LoadMoreIsSuccessfulWithEmptyValue_Should_ShowErrorMessage() = runBlockingTest {
         //  Call setup
-        presenter.setup()
+        presenter.requestUserList()
         verify(mainRepository).loadUserList(capture(mainRepositoryListener))
 
         //  Set a value on listener
