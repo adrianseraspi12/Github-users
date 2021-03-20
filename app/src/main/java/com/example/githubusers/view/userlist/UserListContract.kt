@@ -18,11 +18,14 @@ interface UserListContract {
 
         fun showToastMessage(message: String)
 
+        fun showScreenMessage(message: String)
+
+        fun hideScreenMesasge()
     }
 
     interface Presenter {
 
-        fun setup()
+        fun requestUserList()
 
         fun onScroll(visibleItemCount: Int, totalItemCount: Int, pastVisibleItems: Int)
 

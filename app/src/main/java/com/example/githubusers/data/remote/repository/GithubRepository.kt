@@ -9,6 +9,7 @@ import com.example.githubusers.util.constants.requestUserProfileErrorMessage
 import com.example.githubusers.util.constants.somethingWentWrongErrorMessage
 import kotlinx.coroutines.*
 import retrofit2.Response
+import java.lang.Exception
 
 class GithubRepository(
         private var client: GithubClient,
@@ -22,7 +23,7 @@ class GithubRepository(
                 return@withContext Result.onSuccess(response.body())
             }
             return@withContext Result.onFailed(requestUserListErrorMessage)
-        } catch (t: Throwable) {
+        } catch (t: Exception) {
             return@withContext Result.onFailed(t.message ?: somethingWentWrongErrorMessage)
         }
     }
@@ -35,7 +36,7 @@ class GithubRepository(
                 return@withContext Result.onSuccess(response.body())
             }
             return@withContext Result.onFailed(requestUserProfileErrorMessage)
-        } catch (t: Throwable) {
+        } catch (t: Exception) {
             return@withContext Result.onFailed(t.message ?: somethingWentWrongErrorMessage)
         }
     }
