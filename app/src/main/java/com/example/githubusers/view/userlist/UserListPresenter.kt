@@ -59,7 +59,7 @@ class UserListPresenter(
                 val lastItem = listOfUser.last()
                 lastItem.user?.id?.let {
                     isLoading = true
-                    view.showLoading()
+                    view.showLoadMoreLoading()
                     loadNewList(it)
                 }
             }
@@ -71,7 +71,7 @@ class UserListPresenter(
             mainRepository.loadUserList(since, object : Listener<List<UserWithProfile>> {
                 override fun onSuccess(data: List<UserWithProfile>?) {
                     isLoading = false
-                    view.stopLoading()
+                    view.hideLoadMoreLoading()
                     if (data != null) {
                         listOfUser.addAll(data)
                         view.addNewList(data)
@@ -82,7 +82,7 @@ class UserListPresenter(
 
                 override fun onFailed(errorMessage: String) {
                     isLoading = false
-                    view.stopLoading()
+                    view.hideLoadMoreLoading()
                     view.showToastMessage(errorMessage)
                 }
             })

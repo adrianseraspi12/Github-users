@@ -14,6 +14,10 @@ interface UserListContract {
 
         fun stopLoading()
 
+        fun showLoadMoreLoading()
+
+        fun hideLoadMoreLoading()
+
         fun addNewList(list: List<UserWithProfile>)
 
         fun showToastMessage(message: String)

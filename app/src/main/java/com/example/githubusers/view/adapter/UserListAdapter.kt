@@ -9,26 +9,48 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.githubusers.data.local.entity.LocalUser
 import com.example.githubusers.data.local.entity.UserWithProfile
+import com.example.githubusers.databinding.ItemSpinnerBinding
 import com.example.githubusers.databinding.ItemUsersBinding
 import java.util.*
 
 class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit) :
-        RecyclerView.Adapter<UserListAdapter.ViewHolder>(), Filterable {
+        RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
+
+    private val dataType = 0
+    private val spinnerType = 1
 
     var listOfUserWithProfile = mutableListOf<UserWithProfile>()
     var filteredListOfUserWithProfile = mutableListOf<UserWithProfile>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = ItemUsersBinding.inflate(layoutInflater, parent, false)
-        return ViewHolder(binding)
+
+        return if (viewType == dataType) {
+            val binding = ItemUsersBinding.inflate(layoutInflater, parent, false)
+            UserWithProfileViewHolder(binding)
+        } else {
+            val binding = ItemSpinnerBinding.inflate(layoutInflater, parent, false)
+            SpinnerViewHolder(binding)
+        }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is SpinnerViewHolder) return
+        val viewHolder = holder as UserWithProfileViewHolder
         val userWithProfile = filteredListOfUserWithProfile[position]
-        holder.bind(userWithProfile)
-        holder.binding.usersRootContainer.setOnClickListener {
+        viewHolder.bind(userWithProfile)
+        viewHolder.binding.usersRootContainer.setOnClickListener {
             onClickItemListener.invoke(userWithProfile)
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        val lastUserWithProfile = filteredListOfUserWithProfile[position]
+        //  Return spinnerType if the item has null values
+        return if (lastUserWithProfile.user == null && lastUserWithProfile.profile == null) {
+            spinnerType
+        } else {
+            dataType
         }
     }
 
@@ -59,25 +81,16 @@ class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit
         notifyItemChanged(index)
     }
 
-    class ViewHolder(val binding: ItemUsersBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun showLoading() {
+        //  Add an null value to set it as spinner
+        filteredListOfUserWithProfile.add(UserWithProfile())
+        notifyItemInserted(filteredListOfUserWithProfile.size)
+    }
 
-        fun bind(userWithProfile: UserWithProfile) {
-            binding.usersTvUsername.text = userWithProfile.user?.username
-            binding.usersTvDetails.text = userWithProfile.profile?.bio
-
-            val notes = userWithProfile.user?.notes ?: ""
-            if (notes.isNotEmpty()) {
-                binding.usersIvNotes.visibility = View.VISIBLE
-            } else {
-                binding.usersIvNotes.visibility = View.GONE
-            }
-
-            Glide.with(binding.root)
-                    .load(userWithProfile.user?.image)
-                    .centerCrop()
-                    .dontAnimate()
-                    .into(binding.usersIvProfile)
-        }
+    fun stopLoading() {
+        //  Remove the null value that stand as spinner
+        filteredListOfUserWithProfile.removeLast()
+        notifyItemRemoved(filteredListOfUserWithProfile.size)
     }
 
     override fun getFilter(): Filter {
@@ -117,4 +130,28 @@ class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit
             }
         }
     }
+
+    class UserWithProfileViewHolder(val binding: ItemUsersBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(userWithProfile: UserWithProfile) {
+            binding.usersTvUsername.text = userWithProfile.user?.username
+            binding.usersTvDetails.text = userWithProfile.profile?.bio
+
+            val notes = userWithProfile.user?.notes ?: ""
+            if (notes.isNotEmpty()) {
+                binding.usersIvNotes.visibility = View.VISIBLE
+            } else {
+                binding.usersIvNotes.visibility = View.GONE
+            }
+
+            Glide.with(binding.root)
+                    .load(userWithProfile.user?.image)
+                    .centerCrop()
+                    .dontAnimate()
+                    .into(binding.usersIvProfile)
+        }
+    }
+
+    class SpinnerViewHolder(binding: ItemSpinnerBinding) : RecyclerView.ViewHolder(binding.root)
+
 }

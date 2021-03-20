@@ -177,6 +177,14 @@ class UserListFragment : Fragment(), UserListContract.View {
         binding.userListProgressbar.visibility = View.GONE
     }
 
+    override fun showLoadMoreLoading() {
+        userListAdapter.showLoading()
+    }
+
+    override fun hideLoadMoreLoading() {
+        userListAdapter.stopLoading()
+    }
+
     override fun addNewList(list: List<UserWithProfile>) {
         userListAdapter.addData(list)
     }
