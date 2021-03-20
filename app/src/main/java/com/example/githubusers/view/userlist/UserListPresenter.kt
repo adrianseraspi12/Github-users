@@ -3,6 +3,7 @@ package com.example.githubusers.view.userlist
 import com.example.githubusers.data.local.entity.UserWithProfile
 import com.example.githubusers.data.main.repository.IMainRepository
 import com.example.githubusers.data.remote.Listener
+import com.example.githubusers.util.constants.noInternetConnectionErrorMessage
 import com.example.githubusers.util.constants.requestUserListErrorMessage
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -23,9 +24,10 @@ class UserListPresenter(
 
     override fun requestUserList() {
         if (userListHasLoaded) return
-
         scope.launch {
             view.showLoading()
+            view.hideScreenMesasge()
+
             mainRepository.loadUserList(object : Listener<List<UserWithProfile>> {
                 override fun onSuccess(data: List<UserWithProfile>?) {
                     view.stopLoading()
@@ -39,8 +41,12 @@ class UserListPresenter(
                 }
 
                 override fun onFailed(errorMessage: String) {
-                    view.showToastMessage(errorMessage)
                     view.stopLoading()
+                    if (noInternetConnectionErrorMessage == errorMessage && !userListHasLoaded) {
+                        view.showScreenMessage(errorMessage)
+                        return
+                    }
+                    view.showToastMessage(errorMessage)
                 }
             })
         }

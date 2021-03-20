@@ -1,6 +1,8 @@
 package com.example.githubusers
 
 import android.content.Context
+import android.content.Context.CONNECTIVITY_SERVICE
+import android.net.ConnectivityManager
 import com.example.githubusers.data.local.UsersDatabase
 import com.example.githubusers.data.local.repository.UserRepository
 import com.example.githubusers.data.remote.interceptor.GithubClientInterceptor
@@ -21,12 +23,13 @@ object Injection {
         return UserRepository(database.usersDao(), database.profileDao(), Dispatchers.IO)
     }
 
-    fun provideGithubRepository(): GithubRepository {
+    fun provideGithubRepository(context: Context): GithubRepository {
+        val connectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val dispatcher = Dispatcher()
         dispatcher.maxRequests = 1
 
         val httpClient = OkHttpClient.Builder()
-            .addInterceptor(GithubClientInterceptor())
+            .addInterceptor(GithubClientInterceptor(connectivityManager))
             .dispatcher(dispatcher)
             .build()
 

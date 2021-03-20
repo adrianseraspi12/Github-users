@@ -12,3 +12,5 @@ const val insertProfileErrorMessage = "Unable to save profile."
 const val requestUserListErrorMessage = "Failed to request user list. Please try again."
 const val requestUserProfileErrorMessage = "Failed to request profile. Please try again."
 const val somethingWentWrongErrorMessage = "Something went wrong. Please try again."
+const val noInternetConnectionErrorMessage = "No internet connection available. Please connect to " +
+        "a wifi or data connection and try again."

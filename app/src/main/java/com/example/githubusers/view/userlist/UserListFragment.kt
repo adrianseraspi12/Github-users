@@ -184,4 +184,13 @@ class UserListFragment : Fragment(), UserListContract.View {
     override fun showToastMessage(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
+
+    override fun showScreenMessage(message: String) {
+        binding.userListTvMessage.text = message
+        binding.userListTvMessage.visibility = View.VISIBLE
+    }
+
+    override fun hideScreenMesasge() {
+        binding.userListTvMessage.visibility = View.GONE
+    }
 }

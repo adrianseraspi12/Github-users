@@ -18,6 +18,9 @@ interface UserListContract {
 
         fun showToastMessage(message: String)
 
+        fun showScreenMessage(message: String)
+
+        fun hideScreenMesasge()
     }
 
     interface Presenter {

@@ -19,7 +19,7 @@ class UserListActivity : AppCompatActivity() {
         val userListFragment = UserListFragment.newInstance()
         val mainRepository = MainRepository(
                 Injection.provideUserRepository(applicationContext),
-                Injection.provideGithubRepository(),
+                Injection.provideGithubRepository(applicationContext),
                 Dispatchers.IO
         )
         UserListPresenter(userListFragment, mainRepository)

@@ -62,7 +62,7 @@ class ProfileActivity : AppCompatActivity() {
         val profileFragment = ProfileFragment.newInstance()
         val mainRepository = MainRepository(
             Injection.provideUserRepository(applicationContext),
-            Injection.provideGithubRepository(),
+            Injection.provideGithubRepository(applicationContext),
             Dispatchers.IO
         )
         ProfilePresenter(profileFragment, userProfile, mainRepository)

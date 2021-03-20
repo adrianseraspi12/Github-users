@@ -15,9 +15,9 @@ import com.example.githubusers.util.extensions.toLocalUser
 import kotlinx.coroutines.*
 
 class MainRepository(
-    private val localRepository: IUserRepository,
-    private val remoteRepository: IGithubRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+        private val localRepository: IUserRepository,
+        private val remoteRepository: IGithubRepository,
+        private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IMainRepository {
     override suspend fun loadUserList(listener: Listener<List<UserWithProfile>>) =
         withContext(ioDispatcher) {
@@ -79,29 +79,29 @@ class MainRepository(
         }
 
     override suspend fun loadUserList(since: Int, listener: Listener<List<UserWithProfile>>) =
-        withContext(ioDispatcher) {
-            try {
-                //  Call fail if list from remote is not empty
-                val listFromRemote = getListFromRemote(since)
-                if (listFromRemote.isEmpty()) {
-                    launch(Dispatchers.Main) { listener.onFailed(requestUserListErrorMessage) }
-                    return@withContext
-                }
+            withContext(ioDispatcher) {
+                try {
+                    //  Call fail if list from remote is not empty
+                    val listFromRemote = getListFromRemote(since)
+                    if (listFromRemote.isEmpty()) {
+                        launch(Dispatchers.Main) { listener.onFailed(requestUserListErrorMessage) }
+                        return@withContext
+                    }
 
-                //  Convert the list from UserResponse to UserWithProfile
-                val listOfUserWithProfile = convertToUserWithProfile(listFromRemote)
+                    //  Convert the list from UserResponse to UserWithProfile
+                    val listOfUserWithProfile = convertToUserWithProfile(listFromRemote)
 
-                //  Update the local database and show the list
-                saveToLocalDatabase(listOfUserWithProfile)
-                launch(Dispatchers.Main) { listener.onSuccess(listOfUserWithProfile) }
-            } catch (e: Exception) {
-                launch(Dispatchers.Main) {
-                    listener.onFailed(
-                        e.message ?: somethingWentWrongErrorMessage
-                    )
+                    //  Update the local database and show the list
+                    saveToLocalDatabase(listOfUserWithProfile)
+                    launch(Dispatchers.Main) { listener.onSuccess(listOfUserWithProfile) }
+                } catch (e: Exception) {
+                    launch(Dispatchers.Main) {
+                        listener.onFailed(
+                                e.message ?: somethingWentWrongErrorMessage
+                        )
+                    }
                 }
             }
-        }
 
     override suspend fun updateUserOnLocal(user: LocalUser, listener: Listener<Nothing>) {
         val result = localRepository.updateUser(user)
@@ -126,9 +126,12 @@ class MainRepository(
 
     private suspend fun getListFromRemote(since: Int): MutableList<UserResponse> {
         val resultFromRemote = remoteRepository.requestUserList(since)
-        var listOfUser = mutableListOf<UserResponse>()
+        val listOfUser: MutableList<UserResponse>
         if (resultFromRemote is Result.onSuccess) {
             listOfUser = resultFromRemote.data?.toMutableList() ?: mutableListOf()
+        } else {
+            val errorMessage = (resultFromRemote as Result.onFailed).errorMessage
+            throw Exception(errorMessage)
         }
         return listOfUser
     }
@@ -172,8 +175,8 @@ class MainRepository(
     }
 
     private fun mergeLocalAndRemoteList(
-        listFromLocal: List<UserWithProfile>,
-        listFromRemote: List<UserWithProfile>
+            listFromLocal: List<UserWithProfile>,
+            listFromRemote: List<UserWithProfile>
     ): List<UserWithProfile> {
         val mutableListFromRemote = listFromRemote.toMutableList()
         mutableListFromRemote.forEachIndexed { index, userWithProfileRemote ->
