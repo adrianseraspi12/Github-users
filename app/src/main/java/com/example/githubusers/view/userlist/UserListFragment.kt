@@ -192,7 +192,7 @@ class UserListFragment : Fragment(), UserListContract.View {
         binding.userListTvMessage.visibility = View.VISIBLE
     }
 
-    override fun hideScreenMesasge() {
+    override fun hideScreenMessage() {
         binding.userListTvMessage.visibility = View.GONE
     }
 }

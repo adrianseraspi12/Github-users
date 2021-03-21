@@ -24,7 +24,7 @@ interface UserListContract {
 
         fun showScreenMessage(message: String)
 
-        fun hideScreenMesasge()
+        fun hideScreenMessage()
     }
 
     interface Presenter {
