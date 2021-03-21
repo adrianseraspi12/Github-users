@@ -19,7 +19,8 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.eq
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 
 @ExperimentalCoroutinesApi
 class UserListPresenterTest : BasePresenterTest() {
@@ -63,12 +64,13 @@ class UserListPresenterTest : BasePresenterTest() {
     fun test_When_DataFromRepositoryHasValues_Should_CallViewSetUserList() = runBlockingTest {
         presenter.requestUserList()
 
-        verify(view).showLoading()
         verify(mainRepository).loadUserList(capture(mainRepositoryListener))
 
         mainRepositoryListener.value.onSuccess(listUserWithProfile)
         val showListOfUserWithProfile = argumentCaptor<List<UserWithProfile>>()
 
+        verify(view).showLoading()
+        verify(view).hideScreenMessage()
         verify(view).stopLoading()
         verify(view).setUserList(capture(showListOfUserWithProfile))
 
@@ -77,7 +79,7 @@ class UserListPresenterTest : BasePresenterTest() {
     }
 
     @Test
-    fun test_When_DataFromRepositoryIsFail_Should_CallViewFail() = runBlockingTest {
+    fun test_When_LoadUserListIsFailOnFirstLoad_Should_CallShowScreenMessage() = runBlockingTest {
         presenter.requestUserList()
 
         verify(view).showLoading()
@@ -85,6 +87,7 @@ class UserListPresenterTest : BasePresenterTest() {
 
         mainRepositoryListener.value.onFailed(requestUserListErrorMessage)
         verify(view).stopLoading()
+        verify(view).showScreenMessage(requestUserListErrorMessage)
     }
 
     @Test
@@ -121,8 +124,8 @@ class UserListPresenterTest : BasePresenterTest() {
         verify(mainRepository).loadUserList(eq(listUserWithProfile[0].user?.id!!), capture(showNewListOfUserWithProfile))
         showNewListOfUserWithProfile.value.onSuccess(newListUserWithProfile)
 
-        verify(view, times(2)).showLoading()
-        verify(view, times(2)).stopLoading()
+        verify(view).showLoadMoreLoading()
+        verify(view).hideLoadMoreLoading()
         verify(view).addNewList(newListUserWithProfile)
     }
 
@@ -144,8 +147,8 @@ class UserListPresenterTest : BasePresenterTest() {
         verify(mainRepository).loadUserList(eq(listUserWithProfile[0].user?.id!!), capture(showNewListOfUserWithProfile))
         showNewListOfUserWithProfile.value.onFailed(requestUserListErrorMessage)
 
-        verify(view, times(2)).showLoading()
-        verify(view, times(2)).stopLoading()
+        verify(view).showLoadMoreLoading()
+        verify(view).hideLoadMoreLoading()
         verify(view).showToastMessage(requestUserListErrorMessage)
     }
 
@@ -167,8 +170,8 @@ class UserListPresenterTest : BasePresenterTest() {
         verify(mainRepository).loadUserList(eq(listUserWithProfile[0].user?.id!!), capture(showNewListOfUserWithProfile))
         showNewListOfUserWithProfile.value.onSuccess(null)
 
-        verify(view, times(2)).showLoading()
-        verify(view, times(2)).stopLoading()
+        verify(view).showLoadMoreLoading()
+        verify(view).hideLoadMoreLoading()
         verify(view).showToastMessage(requestUserListErrorMessage)
     }
 
