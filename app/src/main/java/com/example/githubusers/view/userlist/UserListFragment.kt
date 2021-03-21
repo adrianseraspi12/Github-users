@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -161,11 +160,6 @@ class UserListFragment : Fragment(), UserListContract.View {
     }
 
     override fun setUserList(list: List<UserWithProfile>) {
-        //  Move progressbar at the bottom
-        val params: ConstraintLayout.LayoutParams =
-                binding.userListProgressbar.layoutParams as ConstraintLayout.LayoutParams
-        params.verticalBias = 1f
-        binding.userListProgressbar.layoutParams = params
         userListAdapter.setData(list)
     }
 
@@ -175,6 +169,14 @@ class UserListFragment : Fragment(), UserListContract.View {
 
     override fun stopLoading() {
         binding.userListProgressbar.visibility = View.GONE
+    }
+
+    override fun showLoadMoreLoading() {
+        userListAdapter.showLoading()
+    }
+
+    override fun hideLoadMoreLoading() {
+        userListAdapter.stopLoading()
     }
 
     override fun addNewList(list: List<UserWithProfile>) {
@@ -190,7 +192,7 @@ class UserListFragment : Fragment(), UserListContract.View {
         binding.userListTvMessage.visibility = View.VISIBLE
     }
 
-    override fun hideScreenMesasge() {
+    override fun hideScreenMessage() {
         binding.userListTvMessage.visibility = View.GONE
     }
 }
