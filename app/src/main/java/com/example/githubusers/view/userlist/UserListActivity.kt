@@ -15,19 +15,23 @@ class UserListActivity : AppCompatActivity() {
     }
 
     private fun setupFragment() {
+        val fm = supportFragmentManager
         //  Initialize fragment and presenter
-        val userListFragment = UserListFragment.newInstance()
+        var userListFragment = fm.findFragmentByTag(UserListFragment.TAG) as? UserListFragment
         val mainRepository = MainRepository(
                 Injection.provideUserRepository(applicationContext),
                 Injection.provideGithubRepository(applicationContext),
                 Dispatchers.IO
         )
-        UserListPresenter(userListFragment, mainRepository)
 
+        //  Initialize fragment and presenter if not created
+        if (userListFragment == null) {
+            userListFragment = UserListFragment.newInstance()
+            UserListPresenter(userListFragment, mainRepository)
+        }
         //  setup fragment view
-        val fm = supportFragmentManager
         fm.beginTransaction().apply {
-            replace(R.id.base_root_view, userListFragment)
+            replace(R.id.base_root_view, userListFragment, UserListFragment.TAG)
             commit()
         }
     }
