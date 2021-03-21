@@ -10,7 +10,6 @@ import com.example.githubusers.data.main.repository.MainRepository
 import com.example.githubusers.databinding.ActivityProfileBinding
 import kotlinx.coroutines.Dispatchers
 
-
 const val USER_PROFILE_ARG = "userProfileArg"
 const val UPDATED_NOTE_RESULT_ARG = "newNoteResultArg"
 
@@ -53,24 +52,29 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupFragment() {
+        val fm = supportFragmentManager
         //  Get arguments from last screen
         val userProfile = intent.getSerializableExtra(USER_PROFILE_ARG) as UserWithProfile
         //  Set name on toolbar
         title = userProfile.profile?.name
 
         //  Initialize presenter and profile fragment
-        val profileFragment = ProfileFragment.newInstance()
+        var profileFragment = fm.findFragmentByTag(ProfileFragment.TAG) as? ProfileFragment
         val mainRepository = MainRepository(
-            Injection.provideUserRepository(applicationContext),
-            Injection.provideGithubRepository(applicationContext),
-            Dispatchers.IO
+                Injection.provideUserRepository(applicationContext),
+                Injection.provideGithubRepository(applicationContext),
+                Dispatchers.IO
         )
-        ProfilePresenter(profileFragment, userProfile, mainRepository)
+
+        //  Initialize fragment and presenter if not created
+        if (profileFragment == null) {
+            profileFragment = ProfileFragment.newInstance()
+            ProfilePresenter(profileFragment, userProfile, mainRepository)
+        }
 
         //  setup fragment view
-        val fm = supportFragmentManager
         fm.beginTransaction().apply {
-            replace(binding.profileContainerView.id, profileFragment)
+            replace(binding.profileContainerView.id, profileFragment, ProfileFragment.TAG)
             commit()
         }
     }

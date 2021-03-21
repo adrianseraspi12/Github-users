@@ -34,12 +34,13 @@ class UserListFragment : Fragment(), UserListContract.View {
     private lateinit var linearLayoutManager: LinearLayoutManager
 
     companion object {
+        const val TAG = "UserListFragment"
         fun newInstance() = UserListFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        linearLayoutManager = LinearLayoutManager(context)
+        retainInstance = true
         initAdapter()
     }
 
@@ -49,6 +50,7 @@ class UserListFragment : Fragment(), UserListContract.View {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentUserListBinding.inflate(inflater, container, false)
+        linearLayoutManager = LinearLayoutManager(context)
         return binding.root
     }
 

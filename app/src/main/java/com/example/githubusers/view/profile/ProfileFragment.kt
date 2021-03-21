@@ -17,14 +17,19 @@ class ProfileFragment : Fragment(), ProfileContract.View {
     private lateinit var presenter: ProfileContract.Presenter
 
     companion object {
-
+        const val TAG = "ProfileFragment"
         fun newInstance() = ProfileFragment()
 
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
+    }
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
@@ -46,13 +51,13 @@ class ProfileFragment : Fragment(), ProfileContract.View {
     }
 
     override fun showProfileDetails(
-        name: String,
-        image: String,
-        followers: String,
-        following: String,
-        company: String,
-        blog: String,
-        notes: String
+            name: String,
+            image: String,
+            followers: String,
+            following: String,
+            company: String,
+            blog: String,
+            notes: String
     ) {
         binding.profileTvInfoName.text = name
         binding.profileTvFollowers.text = followers
@@ -61,9 +66,9 @@ class ProfileFragment : Fragment(), ProfileContract.View {
         binding.profileTvBlog.text = blog
         binding.profileEtNote.setText(notes)
         Glide.with(this)
-            .load(image)
-            .centerCrop()
-            .into(binding.profileImageview)
+                .load(image)
+                .centerCrop()
+                .into(binding.profileImageview)
     }
 
     override fun showToastMessage(message: String) {
