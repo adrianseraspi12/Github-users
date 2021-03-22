@@ -1,5 +1,6 @@
 package com.example.githubusers.view.adapter
 
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,11 +8,15 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.BitmapImageViewTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.githubusers.data.local.entity.LocalUser
 import com.example.githubusers.data.local.entity.UserWithProfile
 import com.example.githubusers.databinding.ItemSpinnerBinding
 import com.example.githubusers.databinding.ItemUsersBinding
+import com.example.githubusers.util.extensions.invertColor
 import java.util.*
+
 
 class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
@@ -65,9 +70,10 @@ class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit
     }
 
     fun addData(newData: List<UserWithProfile>) {
+        val lastIndex = filteredListOfUserWithProfile.lastIndex
         this.listOfUserWithProfile.addAll(newData)
         this.filteredListOfUserWithProfile.addAll(newData)
-        notifyDataSetChanged()
+        notifyItemRangeChanged(lastIndex, filteredListOfUserWithProfile.size)
     }
 
     fun update(userWithProfile: UserWithProfile) {
@@ -145,13 +151,24 @@ class UserListAdapter(private val onClickItemListener: (UserWithProfile) -> Unit
             }
 
             Glide.with(binding.root)
+                    .asBitmap()
                     .load(userWithProfile.user?.image)
                     .centerCrop()
                     .dontAnimate()
-                    .into(binding.usersIvProfile)
+                    .into(object : BitmapImageViewTarget(binding.usersIvProfile) {
+                        override fun onResourceReady(resource: Bitmap,
+                                                     transition: Transition<in Bitmap>?) {
+                            //  Add 1 because the starting position is 0
+                            val position = adapterPosition + 1
+                            if (position % 4 == 0) {
+                                binding.usersIvProfile.setImageBitmap(resource.invertColor())
+                            } else {
+                                super.onResourceReady(resource, transition)
+                            }
+                        }
+                    })
         }
     }
 
     class SpinnerViewHolder(binding: ItemSpinnerBinding) : RecyclerView.ViewHolder(binding.root)
-
 }
